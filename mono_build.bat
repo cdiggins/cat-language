@@ -1,0 +1,1 @@
+gmcs *.cs -out:cat_mono.exe -r:System.Drawing -r:System.Windows.Forms -r:System.Data

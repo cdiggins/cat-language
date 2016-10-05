@@ -1,0 +1,13 @@
+#summary Definition of thunks.
+#labels Glossary
+
+= Thunk =
+
+A thunk is a [Arity nullary] (i.e. zero-argument) function that returns a constant that is bound to the lexical scope in which it is created. 
+
+In Cat a thunk can be emulated using the [Quote quote instruction]:  
+
+{{{
+define thunk : ('a -> ( -> 'a))
+{ quote }
+}}}

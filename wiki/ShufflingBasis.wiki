@@ -1,0 +1,28 @@
+#summary A minimal basis for rearranging the stack.
+#labels CodeExample,Theory
+
+= A Minimal Basis of Stack Shuffling Operators =
+
+It is an important and useful observation that by using only a combination of the swap and dip primitive operations, one can define a program to create any desired permutation of a stack of any given depth [http://tunes.org/~iepos/joy.html Brent kerby (2002)]. This is an important observation because it shows that it is not only possible, but easy to permute a stack of arbitrary depth without resorting to variable names. To prove this we simply need to construct a combinator to extract the nth item on the stack and place it on the top. 
+
+{{{
+  define dig0 { }
+  define dig1 { [dig0] dip swap }
+  define dig2 { [dig1] dip swap }
+  define dig3 { [dig2] dip swap }
+  ...
+}}}
+
+{{{
+  define bury0 { }
+  define bury1 { swap [bury0] dip }
+  define bury2 { swap [bury1] dip }
+  define bury3 { swap [bury2] dip }
+  ...
+}}}
+
+Given a sufficient number of dig and bury functions, it becomes trivial to construct a stack shuffling operator that permutes the stack of any specified depth.
+
+== See Also ==
+
+  * [WhyNotDigN Why isn't there a digN or buryN?]

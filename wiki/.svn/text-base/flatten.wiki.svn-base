@@ -1,0 +1,25 @@
+#summary Explains the flatten standard library function.
+#labels Library,CodeExample,Lists
+
+= The flatten Library Function =
+
+The flatten function converts a list of lists to a list that is the concatenation of all internal lists. If the input list contains any items that are not a list, flatten will fail. 
+
+
+== Implementation ==
+
+{{{
+define flatten : (list -> list)
+{ nil [cat] foldl }
+}}}
+
+== Usage ==
+
+{{{
+>> ((1, 2), (3, 4)) flatten
+stack: (1, 2, 3, 4)
+}}}
+
+== See Also ==
+
+  * [MapReduce]

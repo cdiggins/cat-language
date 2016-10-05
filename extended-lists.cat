@@ -1,0 +1,62 @@
+define (
+{{
+  desc:
+    List initializer.
+  test:
+    in: nil
+    out: [] list
+}}
+{ nil }
+
+define ,
+{{
+  desc:
+    List separator.
+}}
+{ cons }
+
+define )
+{{
+  desc:
+    List terminator.
+}}
+{ cons }
+
+define ()
+{{
+  desc:
+    Empty list.
+}}
+{ nil }
+
+// This will be useful for implementing a better split function, among other things
+define do_while : ('A list ('A 'a -> 'A bool) -> 'A list)
+{{
+  desc:
+    An early-terminating fold.
+}}
+{
+  ...
+}
+
+// This requires "count_while" which is not currently implemented.
+define index_of : (list 'a -> list int)
+{{
+  desc:
+    Returns the index of a value in a list or the size of the list
+    if not found.
+  test:
+    in: [1 2 3 4] list 1 index_of popd
+    out: 3
+  test:
+    in: ['a' 'b' 'c'] list 'c' index_of popd
+    out: 0
+  test:
+    in: ['a' 'b' 'c'] list 'd' index_of popd
+    out: 3
+}}
+{
+  [neq] papply count_while
+}
+
+

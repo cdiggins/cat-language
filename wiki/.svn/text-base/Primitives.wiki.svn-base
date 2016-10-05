@@ -1,0 +1,28 @@
+#summary Explanation of the primitive functions and primitive types.
+#labels Glossary
+
+= Primitives =
+
+The term primitive can be used to refer to either primitive functions or primitive types. 
+
+== Primitive Types ==
+
+The primitive types are types which are predefined by the Cat compiler or interpreter. For the time being, no new types can be defined, so all types are primitives. The following are the primitive types:
+
+  * int - integer object 
+  * float - floating point object
+  * list - list object or generator object
+  * hash_list - hash table
+  * var - variant type (dynamically typed value)
+  * bool - boolean object (true or false0
+  * char - character object (e.g. 'Q')
+  * string - string object (e.g. "Hello World\n")
+  * function - base type for any function 
+
+The name enclosed in parantheses is the .NET class which is associated with Cat primitive types. Their names are exposed when you use the [MetaCommand meta-command] #defs. 
+
+== Primitive Functions ==
+
+The primitive functions are the core instructions which are understood by the Cat compiler or interpreter. The primitive functions are listed at http://www.cat-language.com/manual.html#primitives
+
+

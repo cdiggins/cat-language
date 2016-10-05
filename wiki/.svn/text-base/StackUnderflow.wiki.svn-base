@@ -1,0 +1,8 @@
+#summary Explanation of stack underflow and how a type-system prevents it.
+#labels Glossary
+
+= Stack Underflow =
+
+Stack undeflow is an error that occurs when you try to pop an item from an empty stack. A well-typed Cat program can never result in a stack underflow. 
+
+The guarantee of no stack underflow, is one of the big advantages of static type checking. Not only can the compiler generate more efficient code as a result of making this assumption, it reduces the chance of error, thus decreasing time spent debugging and testing.

@@ -1,0 +1,159 @@
+// Dedicated to the public domain by Christopher Diggins
+// This file is free to be used, modified or redistributed for any purpose,
+// without restriction, obligation or warantee.
+// http://www.cdiggins.com
+
+//=============================================================================
+
+define noop : ( -> )
+{{
+  desc:
+    Does nothing
+  tags:
+    level0,misc
+}}
+{ }
+
+//=============================================================================
+// Exception throwing and handling
+
+define throw_if : (bool any ~> )
+{{
+  desc:
+    A utilty for throwing exceptions
+  tags:
+    level1,misc
+}}
+{ [throw] [quote] dip compose [] if }
+
+define assert : (bool -> )
+{{
+  desc:
+    Used to check that preconditions or postconditions are true
+  tags:
+    level1,misc
+}}
+{ "assertion failed" throw_if }
+
+define try : (( -> 'A) -> 'A)
+{{
+  desc:
+    Provides a simple default exception handler
+  tags:
+    level1,misc
+}}
+{ ["exception data: " write writeln] try_catch }
+
+//=============================================================================
+// Some really primitive math functions
+
+define neq : ('a 'a -> bool)
+{{
+  desc:
+    Pushes true if the top two values on the stack are not equal.
+  test:
+    in: 3 5 neq
+    out: true
+  test:
+    in: 'a' 'a' neq
+    out: false
+  tags:
+    level0,boolean
+}}
+{
+  eq not
+}
+
+define inc : (int -> int)
+{{
+  desc:
+    Adds one to an integer on the stack
+  test:
+    in: 5 inc
+    out: 6
+  tags:
+    level0,math
+}}
+{
+  1 add_int
+}
+
+define dec : (int -> int)
+{{
+  desc:
+    Subtract one from an integer on the stack
+  test:
+    in: 5 dec
+    out: 4
+  tags:
+    level0,math
+}}
+{
+  1 sub_int
+}
+
+define eqz : (int -> bool)
+{{
+  desc:
+    Returns true if the top value is zero
+  test:
+    in: 5 eqz
+    out: false
+  test:
+    in: 0 eqz
+    out: true
+  tags:
+    level0,math
+}}
+{
+  0 eq
+}
+
+define neqz : (int -> int bool)
+{{
+  desc:
+    Returns true if the top value is zero
+  test:
+    in: 5 neqz
+    out: true
+  test:
+    in: 0 neqz
+    out: false
+  tags:
+    level0,math
+}}
+{
+  eqz not
+}
+
+define modn : (int int -> bool)
+{{
+  desc:
+    Returns true if the second integer modulo the top integer is equal to zero.
+  test:
+    in: 4 2 modn
+    out: true
+  test:
+    in: 5 3 modn
+    out: false
+  tags:
+    level1,math
+}}
+{
+  mod_int eqz
+}
+
+define negate : (('A -> 'B bool) -> ('A -> 'B bool))
+{{
+  desc:
+    Takes a function that returns a boolean value (i.e. a predicate) and creates a new function that
+    is the negation of the predicate.
+  test:
+    in: 0 [eqz] negate apply
+    out: false
+  tags:
+    level1,math
+}}
+{
+  [not] compose
+}

@@ -1,0 +1,42 @@
+#summary Type annotations for functions.
+#labels Glossary
+
+=Type Annotations=
+
+A type annotation (also known as a type signature) is an explicit declaration of the tyep of a function in Cat. 
+
+Every valid function in Cat has a type of the form:
+
+{{{
+  (c0 c1 .. cN -> p0 p1 .. pM)
+}}}
+
+This type can either be written out explicitly or it is [TypeInfererence inferred] automatically by the compiler. 
+
+Everything to the left of the arrow is referred to as the consumption, and represents the set of types that are removed from the stack during the function's execution. Everything to the right of the arrow is referred to as the production, and represents the set of types that are left on the output stack after the function's execution. 
+
+==Type and stack variables==
+
+There are two kinds of variables possible in a Cat function signature: type variables and stack variables. A type variable has the form 'a (the name must start with a lower-case letter) and corresponds to the type of any single value on the stack. A stack variable has the form 'A (the name must start with an upper-case letter) and corresponds to the types of a set of values on the stack.
+
+==Examples==
+
+The following are some examples of type annotations:
+
+{{{
+  0 : ( -> int)
+  true : ( -> bool)
+  not : (bool -> bool)
+  inc : (int -> int)
+  add : (int int -> int)
+  lteq : (int int -> bool)
+  pop : ('a -> )
+  dup : ('a -> 'a 'a)
+  swap : ('a 'b -> 'b 'a)
+  quote : ('a -> ( -> 'a))
+  compose : (('A -> 'B) ('B -> 'C) -> ('A -> 'C))
+  eval : ('A ('A -> 'B) -> 'B)
+  dip : ('A 'b ('A -> 'C) -> 'C 'b)
+  if : ('A bool ontrue=('A -> 'B) onfalse=('A -> 'B) -> 'B)
+  while : ('A body=('A -> 'A) cond=('A -> 'A bool) -> 'A)
+}}}

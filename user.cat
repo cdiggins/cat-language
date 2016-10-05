@@ -1,0 +1,23 @@
+define process {
+  // argument = xs
+  0 // zeros
+  0 // sum
+  0 // i
+  [
+    dig3 // bring xs to top of local stack
+    dupd swap get_at eqz // xs[i] == 0
+      [[inc] dip3] // inc zeros
+      []
+    if
+    dupd swap get_at // tmp = xs[i]
+    [bury3] dip // put xs to bottom of local stack
+    swap [add_int] dip // sum += tmp
+    inc // ++i
+  ]
+  [
+    dig3 count [bury3] dip dupd lt_int // i <= xs.Size
+  ]
+  while
+  pop // remove i
+  swap sub_int // sum-zeros
+}

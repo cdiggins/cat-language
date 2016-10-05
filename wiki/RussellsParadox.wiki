@@ -1,0 +1,12 @@
+#summary An explanation of Russell's Paradox.
+#labels Glossary
+
+= Russell's Paradox =
+
+Russell's pardox, described in 1901 by Bertrand Russell, can be summarized as:
+
+  "Let M be the set of all sets that do not contain themselves as members." 
+
+This set is well-defined according to the classical set-theory, but it contains a mathematical contradiction: M can neither be included nor excluded from this set.
+
+This observation was the impetus for the development of [TypeTheory type theory].  

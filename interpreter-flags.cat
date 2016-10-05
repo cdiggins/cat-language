@@ -1,0 +1,19 @@
+// Dedicated to the public domain by Christopher Diggins
+// This file is free to be used, modified or redistributed for any purpose,
+// without restriction, obligation or warantee.
+// http://www.cdiggins.com
+
+// This file allows fine-tuned controlling the behaviour of the interpreter
+
+define get_config_class { nil "Cat.Config" clr_new }
+
+// Sets a flag which is unset, or unsets a flag which is set.
+define twiddle_config_field { get_config_class clr_get_field [not] dip clr_set_field pop }
+
+// controls various interpreter options
+define ~verbose_inference { "gbVerboseInference" twiddle_config_field }
+define ~allow_redefines { "gbAllowRedefines" twiddle_config_field }
+define ~show_point_free_conversion { "gbShowPointFreeConversion" twiddle_config_field }
+define ~show_timings { "gbShowTimeElapsed" twiddle_config_field }
+define ~show_stack { "gbOutputStack" twiddle_config_field }
+define ~type_checking { "gbTypeChecking" twiddle_config_field }

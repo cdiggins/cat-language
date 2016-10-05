@@ -1,0 +1,8 @@
+#summary Definition of expression.
+#labels Glossary
+
+= Expression =
+
+An expressions is any consequtive sequence of terms. A term is a [Function function], [Literal literal], or [Quotation quotation].
+
+An expression may be treated as a value (i.e. placed on the stack) by being quoted using the quotation operators `[` and `]`.

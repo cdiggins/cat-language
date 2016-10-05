@@ -1,0 +1,92 @@
+// Dedicated to the public domain by Christopher Diggins
+// This file is free to be used, modified or redistributed for any purpose,
+// without restriction, obligation or warantee.
+// http://www.cdiggins.com
+
+//==============================================================================
+// Hash helper functions
+
+define hash_safe_get : (hash_list any any -> hash_list any)
+{{
+  desc:
+    Gets a value from a hash_list. If it doesn't exist then uses the default
+  test:
+    in: hash_list 1 "a" hash_set "a" 0 hash_safe_get popd
+    out: 1
+  test:
+    in: hash_list 1 "a" hash_set "b" 0 hash_safe_get popd
+    out: 0
+  tags:
+    level2,hash
+}}
+{
+  [dup [hash_contains] dip] dip
+  [[hash_get] papply] dip
+  quote
+  if
+}
+
+define hash_add_chain : (hash_list any any -> hash_list)
+{{
+  desc:
+    Adds an element as unit list to a hash_list if it doesn't exist,
+    otherwise chain it to the current list item.
+  test:
+    in: hash_list 1 "a" hash_add_chain "a" hash_get popd
+    out: [1] list
+  test:
+    in: hash_list 1 "a" hash_add_chain 2 "a" hash_add_chain "a" hash_get popd
+    out: [1 2] list
+  tags:
+    level2,hash
+}}
+{
+  dup swapd
+  [[nil hash_safe_get] dip cons] dip
+  hash_set
+}
+
+define list_to_hash : (list -> hash_list)
+{{
+  desc:
+    Converts a list of pairs into a hash list
+  test:
+    in: [1 "a" pair 2 "b" pair 3 "c" pair] list list_to_hash "a" hash_get popd
+    out: [1] list
+  tags:
+    level2,hash
+}}
+{
+  hash_list swap [unpair hash_add_chain] foreach
+}
+
+define self_join : (list -> list)
+{{
+  desc:
+    Performs an inner self-join on a list of pairs based the first item.
+    In other words all unique first items in pairs are treated as keys,
+    and all second values are concatenated together in a list.
+  test:
+    in: [1 "a" pair 2 "b" pair 3 "a" pair 4 "b" pair] list self_join
+    out: [[4 2] list "b" pair [3 1] list "a" pair] list
+  tags:
+    level2,hash
+}}
+{
+  list_to_hash hash_to_list
+}
+
+define join : (list list -> list)
+{{
+  desc:
+    Performs an inner join on two lists of pairs. This is the same
+    as concatenating two list and performing a self_join.
+  test:
+    in: [1 "a" pair 2 "b" pair] list [3 "a" pair 4 "b" pair] list join
+    out: [[4 2] list "b" pair [3 1] list "a" pair] list
+  tags:
+    level2,hash
+}}
+{
+  cat self_join
+}

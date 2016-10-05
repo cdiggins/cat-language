@@ -1,0 +1,89 @@
+// Dedicated to the public domain by Christopher Diggins
+// This file is free to be used, modified or redistributed for any purpose,
+// without restriction, obligation or warantee.
+// http://www.cdiggins.com
+
+// Fix-point combinator tests
+
+define m
+{{
+  desc:
+    The self application combinator, sometimes referred to as the U combinator
+  tags:
+    demo,fixpoint
+}}
+{
+  dup apply
+}
+
+define m_fact : (int -> int)
+{{
+  desc:
+    A factorial written using the m (a.k.a. U) combinator
+  test:
+    in: 5 m_fact
+    out: 120
+  tags:
+    demo,fixpoint
+}}
+{
+  [
+    over 0 eq
+    [pop2 1]
+    [[dup dec] dip m mul_int]
+    if
+  ]
+  m
+}
+
+define m_while : ('A ('A -> 'A) ('A -> 'A bool) -> 'A)
+{{
+  desc:
+    A while function written using the M combinator
+  test:
+    in: 1 5 [[2 mul_int] dip dec] [is_neqz] m_while pop
+    out: 32
+  tags:
+    demo,fixpoint
+}}
+{
+  // [$A] [$B]
+  [dip swap] papply      // [$A] [[$B] dip swap]
+  swap               // [[$B] dip swap] [$A]
+  [dip m] papply     // [[$B] dip swap] [[$A] swap m]
+  quote compose      // [[$B] dip swap [[$A] dip m]]
+  [[pop] if] compose // [[$B] dip swap [[$A] dip m] [pop] if]
+  m
+}
+
+define y
+{{
+  desc:
+    This is the famous y combinator. It executes a function with itself as an argument.
+    The function is expected to terminate on its own when a "fixpoint" is reached.
+  tags:
+    demo,fixpoint
+}}
+{
+  [dup papply] swap compose dup apply
+}
+
+define y_fact : (int -> int)
+{{
+  desc:
+    A factorial written using the y combinator
+  test:
+    in: 5 y_fact
+    out: 120
+  tags:
+    demo,fixpoint
+}}
+{
+  [
+    dupd swap 0 eq
+      [pop2 1]
+      [[dup dec] dip apply mul_int]
+    if
+  ]
+  y
+}

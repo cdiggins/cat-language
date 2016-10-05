@@ -1,0 +1,17 @@
+#summary Explanation of purity and impurity.
+#labels Glossary
+
+= Purity =
+
+A pure [Expression expression] is an expression that has no [SideEffect side-effects]. An expression is pure if and only if all sub-expressions are pure. [Quotation Quotations] and [Literal literals] are always pure. A quotation may be impure if evaluated.
+
+A pure function is a function which consists of only pure expressions. 
+
+A pure expression is [ReferentialTransparency referentially transparent].
+
+Pure functions have a type expressed as: `(Consumption -> Production)` where as impure functions have a type expressed as `(Consumption ~> Production)`.
+
+A language is pure if only pure expressions can be expressed using it. The subset of Cat consisting of only [Level Level0] and [Level Level1] [Primitives primitives] is pure. 
+
+
+

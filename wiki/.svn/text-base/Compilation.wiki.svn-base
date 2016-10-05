@@ -1,0 +1,8 @@
+#summary About the Cat to CIL compiler.
+#labels Usage
+
+= CIL Compiler =
+
+The Cat interpreter comes with a built-in [CIL Common Intermediate Language] (CIL) compiler. The compiler is activated using the `#c` [MetaCommand meta-command] converts a [Quotation quotation] into a dynamic assembly, and saves it as to the file "out.exe".
+
+A dynamic assembly can be run using the `#run` [MetaCommand meta-command].

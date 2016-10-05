@@ -1,0 +1,140 @@
+#summary An explanation of the Google MapReduce framework and simple implementation of a MapReduce algorithm.
+#labels CodeExample,HaskellComparison
+
+= MapReduce =
+
+MapReduce is the name of a programming framework used by Google for performing distributed computation. The MapReduce algorithms are described in the paper [http://labs.google.com/papers/mapreduce.html MapReduce: Simplified Data Processing on Large Clusters] by Jeffrey Dean and Sanjay Ghemawat. 
+
+In addition to the input data, the MapReduce framework requires the user to pass two functions to describe the computation task. One function generates intermediate data sets (named "map" in the paper) and a function for combining intermediate data sets into smaller data sets (named "reduce" in the paper). The MapReduce framework then distributes tasks as needed, taking care of the messy details of task scheduling. 
+
+  Note: the map and reduce functions in the paper are different than the primitive functions of the same name in Cat and other functional languages. This is a source of considerable confusion for people.
+
+The following pseduo-code example taken from the paper by Dean and Ghemawat demonstrates sample input functions to the MapReduce algorithm that count words from multple input documents:
+
+{{{
+map(String key, String value):
+  // key: document name
+  // value: document contents
+  for each word w in value:
+    EmitIntermediate(w, "1");
+  
+reduce(String key, Iterator values):
+  // key: a word
+  // values: a list of counts
+  int result = 0;
+  for each v in values:
+    result += ParseInt(v);
+  Emit(AsString(result));
+}}}
+
+These two functions when passed to the MapReduce framework, would potentially allow us to count all words in occurences. 
+
+== MapReduce in Haskell ==
+
+The paper [http://www.cs.vu.nl/~ralf/MapReduce/paper.pdf Google's MapReduce Programming Model -- Revisited] by Ralf Lammel provides a detailed explanation of the MapReduce algorithm using [Haskell] as an example language. 
+
+The MapReduce algorithm is shown written in Haskell in Lammel's paper as (the terms "map" and "reduce" have been replaced with "m" and "r" for clarity:
+
+{{{
+mapReduce m r
+  = reducePerKey r -- 3. Apply r to each group
+  . groupByKey     -- 2. Group intermediates per key
+  . mapPerKey m    -- 1. Apply m to each key/value pair
+}}}
+
+From Lammel's paper: 
+
+  "We note that the basic skeleton of MapReduce computations is stunningly simple. We assume that mapPerKey, groupByKey and reducePerKey are components of the MapReduce library."
+
+Notice that Lammel uses the function composition operator "." which makes the mapReduce algorithm look almost like a Cat program. He could have written: 
+
+{{{
+mapReduce m r
+  = r . reducePerKey . groupByKey . m . mapPerKey
+}}}
+
+If we were to rewrite the above algorithm in Cat using named parameters we would arrive with:
+
+{{{
+define mapReduce(m r) 
+  = r reducePerKey groupByKey m MapPerKey
+}}}
+
+== MapReduce in Cat ==
+
+The implementation of a naive non-distributed MapReduce algorithm can be expressed in a one-line Cat program as:
+
+{{{
+define map_reduce { [map flatten self_join] dip map }
+}}}
+
+In pseudo-code this could be translated to:
+
+{{{
+map_reduce(input, fmap, freduce) = 
+    map(freduce, self_join(flatten(map(fmap, input))))
+}}}
+
+where the types of the arguments could be described as:
+
+{{{
+  input = list(pair('input_value, 'input_key))
+  fmap = pair('input_value, 'input_key)) -> list(pair('output_value, 'output_key))
+  freduce = pair(list('output_value), 'output_key) -> pair('output_value, 'output_key)
+}}}
+
+Note that these types are not actually valid Cat types. This is a planned future extension for the type system.
+
+Understanding the Cat algorithm requires familiarity with the [self_join] and [flatten] library functions. 
+
+=== Usage ===
+
+The following demonstrates how the map_reduce algorithm in Cat could be used to 
+count words from sentences: 
+
+{{{
+define test_strings
+{
+  (
+    (("The", "quick", "brown", "fox", "jumped", "over", "the", "lazy", "dog"), 1),
+    (("I", "am", "very", "lazy"), 2),
+    (("I", "hope", "this", "is", "over", "quick"), 3),
+    (("I", "have", "high", "hopes", "for", "the", "lazy", "dog"), 4)
+  )
+}
+
+define m
+{ unpair pop [1 swap pair] map }
+
+define r
+{ unpair [sum] dip pair }
+
+define test_map_reduce
+{ test_strings [m] [r] map_reduce print_list }
+}}}
+
+The output of this example is:
+
+{{{
+( 1, The)
+( 1, brown)
+( 1, fox)
+( 1, jumped)
+( 1, am)
+( 1, very)
+( 1, hope)
+( 1, this)
+( 1, is)
+( 2, over)
+( 2, quick)
+( 3, I)
+( 1, have)
+( 1, high)
+( 1, hopes)
+( 1, for)
+( 2, the)
+( 3, lazy)
+( 2, dog)
+}}}
+
+

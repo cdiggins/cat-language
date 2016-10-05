@@ -1,0 +1,19 @@
+#summary Description of the Joy programming language.
+#labels Glossary
+
+= Joy =
+
+Joy is a [Functional functional] dynamic [StackLanguages stack-based] programming language designed by [http://www.latrobe.edu.au/philosophy/phimvt/index.html Manfred von Thun]. Joy was the primary inspiration for the Cat language.
+
+== Links ==
+
+The following are online papers written about Joy by Manfred von Thun.
+
+  # [http://www.latrobe.edu.au/philosophy/phimvt/joy/j01tut.html Tutorial on Joy]
+  # [http://www.latrobe.edu.au/philosophy/phimvt/joy/j02maf.html Mathematical Foundations of Joy]
+  # [http://www.latrobe.edu.au/philosophy/phimvt/joy/j03atm.html Atomic Programs of Joy]
+  # [http://www.latrobe.edu.au/philosophy/phimvt/joy/j04alg.html The Algebra of Joy]
+  # [http://www.latrobe.edu.au/philosophy/phimvt/joy/j05cmp.html Recursion Theory and Joy]
+  # [http://www.latrobe.edu.au/philosophy/phimvt/joy/j06prg.html Programming in Joy]
+  # [http://www.latrobe.edu.au/philosophy/phimvt/joy/j07rrs.html A rewriting system for Joy]  
+  # [http://www.latrobe.edu.au/philosophy/phimvt/joy/j08cnt.html Joy compared with other functional languages] 

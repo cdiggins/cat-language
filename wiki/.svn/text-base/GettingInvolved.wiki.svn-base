@@ -1,0 +1,12 @@
+#summary How to get involved with Cat.
+#labels Project
+
+= Getting Involved =
+
+The easiest way to get involved with the Cat project is to share your ideas, questions, programs, and implementations, on the [http://groups.google.com/group/catlanguage discussion group]. 
+
+A certain amount of consistent involvement on the mailing list would be expected before more responsibilities would be meted out .
+
+The Cat project follows the friendly dictator model of open-source development. As much as I value people's input, [ChristopherDiggins I] make all the decisions. If things aren't going in the direction that you would like and I am not cooperating, you can simply clone the project at any point and take it in whatever direction you want, and you will have more support from me than you would even expect. You have [http://code.google.com/p/cat-language/source subversion access] to everything, including the wiki, so cloning the project is quite trivial. 
+
+I encourage people to consider making their own Cat clones. It can be very fun and informative. I think it will help make the language much healthier and stronger if there are different implementations, because it will speed up the move towards standardization. 

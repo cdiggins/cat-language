@@ -1,0 +1,12 @@
+#summary Definition of reverse polish notation a.k.a postfix notation.
+#labels Glossary
+
+= Reverse Polish Notation (RPN) =
+
+Reverse polish notation, or postfix notation, is a mathematical notation where operators are written following the operands. For example instead of using the traditional syntax of writing `1 + 2`, using postfix notation we would write `1 2 +`. The common mathematical notation is known as infix notation. The third method of expressing mathematical expressions where operators precede the operands is known as prefix notation.
+
+== Links ==
+
+  * http://en.wikipedia.org/wiki/Reverse_polish_notation
+  * http://en.wikipedia.org/wiki/Subject_Object_Verb
+

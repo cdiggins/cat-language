@@ -1,0 +1,56 @@
+#summary Explanation and usage of type inference.
+#labels Glossary,Usage
+
+= Type Inference =
+
+Type inference is when a compiler can deduces the type of a variable or function that isn't explicitly declared in the source code, by examining how it is declared and used. 
+
+The Cat interpreter will explicitly infer the type of a quotation using either the `type_of` primitive function or using the `#t` [MetaCommand meta-command]. The `#t` meta-command shows the step by step process of deriving a type. 
+
+== Examples ==
+
+Example 1:
+
+{{{
+>> [dup dup] #t
+Before unification: 
+('S0 't1 -> 'S2 't3 't3)
+'S0 't1 't1 = 'S2 't3
+Constraints:
+'S2 = 'S0 't1
+'t3 = 't1
+Unifiers:
+'t3 = 't4
+'t1 = 't4
+'S2 = 'S0 't4
+[dup dup] : ('S0 't4 -> 'S0 't4 't4 't4)
+stack: _empty_
+}}}
+
+Example 2:
+
+{{{
+>> [swap pop swap] #t 
+Before unification: 
+('S0 't1 't2 -> 'S3)
+'S0 't2 't1 = 'S3 't4
+Constraints:
+'S3 = 'S0 't2
+'t4 = 't1
+Unifiers:
+'t4 = 't5
+'t1 = 't5
+'S3 = 'S0 't2
+Before unification: 
+('S6 't7 't8 -> 'S9 't11 't10)
+'S6 't8 = 'S9 't10 't11
+Constraints:
+'S6 = 'S9 't10
+'t11 = 't8
+Unifiers:
+'t11 = 't12
+'t8 = 't12
+'S6 = 'S9 't10
+[swap pop swap] : ('S9 't10 't7 't12 -> 'S9 't12 't10)
+}}}
+

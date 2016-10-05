@@ -1,0 +1,10 @@
+#summary About the Common Intermediate Language (CIL or MSIL)
+#labels Glossary
+
+= Common Intermediate Language =
+
+The Common Intermediate Language (CIL) which was previously known as the Microsoft Intermediate Language (MSIL) is the Common Language Runtime (CLR) byte-code used by the Microsoft .NET framework.
+
+== For more information ==
+
+http://dotnet.di.unipi.it/EcmaSpec/PartitionIII/index.html

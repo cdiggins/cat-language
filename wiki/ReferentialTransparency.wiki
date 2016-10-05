@@ -1,0 +1,13 @@
+#summary Definition of referential transparency.
+#labels Glossary
+
+= Referential Transparency =
+
+Refential transparency is the property of a term A that it may be replaced by any other term B if term B accepts precisely the same set of inputs as term A and given any input B will produce the precisely same output as A. Refential transparency can be thought of as a functional or behavioral equivalence. 
+
+For example `[1 2 + +]` is referentially transparent and can be replaced with `[3 +]`. 
+
+Only [Function functions] or [Expression expressions] with no [SideEffect side-effects] (in other words are [Purity pure]) are referentially transparent.
+
+Refential transparency is an important property to identify for [Optimization optimization]. 
+

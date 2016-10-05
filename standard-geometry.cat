@@ -1,0 +1,68 @@
+// Dedicated to the public domain by Christopher Diggins
+// This file is free to be used, modified or redistributed for any purpose,
+// without restriction, obligation or warantee.
+// http://www.cdiggins.com
+
+define pow { pow_dbl }
+define sin { sin_dbl }
+define cos { cos_dbl }
+define tan { tan_dbl }
+define asin { asin_dbl }
+define acos { acos_dbl }
+define atan { atan_dbl }
+define atan2 { atan_dbl }
+define sinh { sinh_dbl }
+define cosh { cosh_dbl }
+define tanh { tanh_dbl }
+define sin_cos { dup sin swap cos }
+define sqrt { sqrt_dbl }
+define ceil { ceil_dbl }
+define floor { floor_dbl }
+define log { log_dbl }
+define log10 { log10_dbl }
+define ln { ln_dbl }
+
+define get_opposite
+{{
+  desc:
+    Given the hypotenuse of a triangle and the angle theta
+    computes the length of the opposite side
+  semantics:
+    get_opposite(hyp theta) => asin(theta) * hyp
+}}
+{ asin * }
+
+define get_adjacent
+{{
+  desc:
+    Given the hypotenuse of a triangle and the angle theta
+    computes the length of the adjacent side
+  semantics:
+    get_adjacent(hyp theta) => acos(theta) * hyp
+}}
+{ acos * }
+
+define point_from_angle
+{{
+  desc:
+    Returns a point given an angle and the
+    length of the hypotenuse
+  semantics:
+    point_from_angle(hyp theta) => (get_opposite(hyp theta), get_adjacent(hyp_theta))
+}}
+{
+  dup2
+  get_adjacent swap
+  get_opposite
+  pair
+}
+
+define point_on_circle
+{{
+  desc:
+    Returns the location i/nth point of a circle centered around the origin
+    with radius "rad".
+  semantics:
+    point_from_circle(radius, i, n) => point_from_angle(radius, 2 * pi * i / n)
+}}
+{ div_dbl 2 pi * * point_from_angle }

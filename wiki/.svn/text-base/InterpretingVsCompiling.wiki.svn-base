@@ -1,0 +1,28 @@
+#summary Interpreting versus Compiling
+
+= Interpreting versus Compiling =
+
+Many people ask if Cat is interpreted or compiled. Like most languages it can be either compiled or interpreted. 
+
+Compiling makes it easier to analyze source code and perform optimizations, since the entire source is available in advance. 
+
+== Simple Compilation Technique ==
+
+A very simple technique for compiling is to write an interpreter, and embed the interpreter and the code as calls to the interpreter inside an executable file.
+
+For example, compiling the following:
+
+{{{
+  1 2 + 
+}}}
+
+Would yield:
+
+{{{
+  Interpreter i = new Interpreter 
+  i.Execute("1");
+  i.Execute("2");
+  i.Execute("+");
+}}}
+
+This offers relatively little advantages however over full interpretation other than the fact that the executable is self-contained. Incremental improvements over this approach nonetheless can be very useful.

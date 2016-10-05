@@ -1,0 +1,10 @@
+#summary Definition of functional.
+#labels Glossary
+
+= Functional Programming and Functional Languages =
+
+Functional programming is a technique of programming which allows function to be created as first-class values and be passed to and from other functions. A functional programming language encourages the usage of functional programming by allowing functions to be treated as first-class values, and provides instructions for creating functions at run-time. 
+
+The term functional programming is also often used to indicate the avoidance of mutable state in computer programs. A pure functional programming language usually means a programming language that disallows any possibility of mutable state (e.g [http://www.haskell.org Haskell]).
+
+In Cat every term (e.g. literal, primitive instruction, or quotation) is a function and can be passed as an argument to a function, or returned as a result from a function. The only syntactic constructs that aren't functions are the quoting operation "[" and "]" (though an analagous function, quote, does exist), and the function definition construct (i.e. define f { ... }).

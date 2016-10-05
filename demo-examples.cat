@@ -1,0 +1,135 @@
+// Dedicated to the public domain by Christopher Diggins
+// This file is free to be used, modified or redistributed for any purpose,
+// without restriction, obligation or warantee.
+// http://www.cdiggins.com
+
+define fib
+{{
+  desc:
+    A simple implementation of the fibonacci function
+  test:
+    in: 0 fib
+    out: 1
+  test:
+    in: 1 fib
+    out: 1
+  test:
+    in: 5 fib
+    out: 8
+  tags:
+    demo,algorithms
+}}
+{
+  [dup 2 lt_int] // termination condition
+  [pop 1]        // termination action
+  [dec dup dec]  // argument relation
+  [add_int]      // result relation
+  bin_rec        // binary recursion operation
+}
+
+define fact : (int -> int)
+{{
+  desc:
+    A simple factorial function
+  precondition:
+    dup 0 gteq
+  test:
+    in: 5 fact
+    out: 120
+  tags:
+    demo,algorithms
+}}
+{
+  dup eqz
+  [pop 1]
+  [dup dec fact mul_int]
+  if
+}
+
+define qsort : (list -> list)
+{{
+  desc:
+    This is a naive but simple implementation of a quick sort algorithm.
+  test:
+    in: [5 4 2 1 3 2 4] list qsort
+    out: [5 4 4 3 2 2 1] list
+  test:
+    in: [3 2 1] list qsort
+    out: [3 2 1] list
+  test:
+    in: [1 2 3] list qsort
+    out: [3 2 1] list
+  test:
+    in: [] list qsort
+    out: [] list
+  tags:
+    demo,algorithms
+}}
+{
+  // Does list have 0 or 1 elements?
+  [small]
+  // Base case do nothing
+  []
+  // Argument-relation
+  //  Split the list using the head as a pivot
+  //  storing the pivot under for later use
+  [uncons under [lt] papply split]
+  // Append the pivot to the first list
+  // then concatenate the two lists.
+  [[swap cons] dip cat]
+  bin_rec
+}
+
+//=============================================================================
+// A simple implementation of the google MapReduce algorithm
+//
+// In pseduo-code:
+//
+//   map_reduce(input fmap freduce) == input fmap map flatten self_join freduce map
+//
+// where:
+//
+//     input = list(pair('input_value, 'input_key))
+//     fmap = pair('input_value, 'input_key)) -> list(pair('output_value, 'output_key))
+//     freduce = pair(list('output_value), 'output_key) -> pair('output_value, 'output_key)
+//
+
+define map_reduce
+{{
+  desc:
+    Takes a list of inputs, a worker function, and on top a way to combine results of two worker
+    functions in an order independent way. This implementation of Cat does not do
+    any parallelization, but by expressing an algorithm in this manner, a clever Cat compiler
+    can automatically distribute and parallelize the work performed by the various worker
+    functions.
+  tags:
+    demo,algorithms
+}}
+{
+  [map flatten self_join] dip map
+}
+
+define test_strings
+{
+  [
+    ["The" "quick" "brown" "fox" "jumped" "over" "the" "lazy" "dog"] list 1 pair
+    ["I" "am" "very" "lazy"] list 2 pair
+    ["I" "hope" "this" "is" "over" "quick"] list 3 pair
+    ["I" "have" "high" "hopes" "for" "the" "lazy" "dog"] list 4 pair
+  ] list
+}
+
+define test_m
+{
+  unpair pop [1 swap pair] map
+}
+
+define test_r
+{
+  unpair [vec_sum] dip pair
+}
+
+define test_map_reduce
+{
+  test_strings [test_m] [test_r] map_reduce print_list
+}

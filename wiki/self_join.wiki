@@ -1,0 +1,24 @@
+#summary Explains the self_join standard library function.
+#labels Library
+
+= The self_join Library Function =
+
+The self_join standard library function accepts a list of [pair pairs] that consists of a key in the first position and a value in the second position. The output of self_join is a list of pairs of keys and lists. For each unique input key, there is only one corresponding output pair which consists of the key as the first element and a list of all corresponding values as the second element.
+
+For example:
+
+{{{
+  >> ((1, "happy"), (2, "unhappy"), (3, "happy"), (4,"sad")) self_join 
+  stack: ( ( ( 4), sad), ( ( 3, 1), happy), ( ( 2), unhappy))  
+}}}
+
+== Implementation == 
+
+The implementation of self_join is quite simple:
+
+{{{
+  define self_join : (list -> list)
+  { list_to_hash hash_to_list }
+}}}
+
+The list_to_hash function converts a list to a [HashTable hash table], and hash_to_list converts a hash table to a list. 

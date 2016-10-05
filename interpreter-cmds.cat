@@ -1,0 +1,12 @@
+// Dedicated to the public domain by Christopher Diggins
+// This file is free to be used, modified or redistributed for any purpose,
+// without restriction, obligation or warantee.
+// http://www.cdiggins.com
+
+// These commands exist for backwards compatibility, but will be possibly
+// remove in later versions of Cat.
+define #h { #metadata }
+define #t { #type }
+define #m { #metacat }
+define #i { #inline }
+define #i0 { #inline-step }

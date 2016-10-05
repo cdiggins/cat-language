@@ -1,0 +1,24 @@
+#summary About the interpreter meta-commands.
+#labels Glossary,Usage
+
+= Meta-Commands =
+
+Meta-commands are commands intended for the interpreter and are explicitly not part of the Cat language. A meta-command typically starts with a hash character (`#`). Note that 
+meta-commands are valid Cat identifiers, and could conflict with a user-definition. 
+
+The meta-commands are:
+
+  * `#h` - Provides detailed help about a primitive or library function. Usage `"dip" #h`.
+  * `#t` - Infer types. Usage: `[swap dup] #t`. See also: TypeInference.
+  * `#m` - Apply loaded macros to a quotation on stack. Usage: `[swap swap] #m`. See also: [Macros Macros].
+  * `#p` - Reduces a quotation on the stack by pre-evaluating sub-expressions. Usage: `[2 3 + +] #p`. See also: PartialEvaluation.
+  * `#i` - Performs inline expansion of function calls in a quotation (5 levels deep). Usage: `[1 [+] curry] #i`. See also: InlineExpansion.
+  * `#i0` - Performs a single inline expansion pass (1 level deep). Usage: `[1 [+] curry] #i`. See also: InlineExpansion.
+  * `#o` - Optimizes a quotation using a combination of techniques. Usage: `[[1 +] map [3 *] map] #o`. See also: [Optimization Optimization].
+  * `#c` - Compiles a quotation into a CIL dynamic assembly and creates an output file "out.exe". Usage: `[42 writeln] #c`. See also: [Compilation Compilation].
+  * `#run` - Runs a dynamic assembly. Usage: `[42 writeln] #c #run`. See also: [Compilation Compilation].
+  * `#save` - Saves a transcript of the session so far to the specified file name. Usage: `"transcript.txt" #save`.
+  * `#load` - Opens and executes a file containing Cat code. Usage: `"mylibrary.cat" #load`.
+  * `#defs` - Lists all loaded functions and their types. Usage: `#defs`.
+  * `#exit` - Exits the interpreter. Usage: `#exit`.
+  

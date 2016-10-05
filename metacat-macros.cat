@@ -1,0 +1,232 @@
+// Dedicated to the public domain by Christopher Diggins
+// This file is free to be used, modified or redistributed for any purpose,
+// without restriction, obligation or warantee.
+// http://www.cdiggins.com
+
+// Simple optimizations
+rule { noop } => { }
+rule { id } => { }
+rule { swap swap } => { }
+rule { swap pop pop } => { pop pop }
+rule { dup pop } => { }
+rule { not not } => { }
+rule { quote apply } => { }
+rule { dup swap } => { dup }
+rule { dup eq } => { pop true }
+rule { papply apply } => { apply }
+rule { dup quote pop } => { }
+rule { dup inc pop } => { }
+rule { dup unit pop } => { }
+rule { dup $a compose pop } => { }
+rule { dup $a pair pop } => { }
+rule { dup $a add pop } => { }
+rule { papply pop } => { pop pop }
+rule { cons pop } => { pop pop }
+rule { $a dip pop } => { pop $a apply }
+
+rule { [apply] papply } => { }
+rule { [] papply } => { quote }
+rule { [] papply dip } => { swap }
+rule { [dup] dip swap pop } => { }
+rule { [] dip } => { }
+rule { [pop $A] papply } => { pop [$A] }
+rule { swap [swap $A] papply papply } => { [$A] papply papply }
+rule { swap $a dip } => { quote $a compose dip }
+rule { quote dip } => { swap }
+
+// This potentially makes things bigger
+rule { $a dup } => { $a $a }
+
+// Combinator fusions
+rule { apply $a apply } => { $a compose apply }
+rule { dip $a dip } => { $a compose dip }
+rule { apply $a $b dip } => { $b compose apply $a }
+
+// Identities
+rule { $b $a swap } => { $a $b }
+rule { $a pop } => { }
+rule { $b $a dip } => { $a apply $b }
+rule { true [$B] [$A] if } => { $B }
+rule { false [$B] [$A] if } => { $A }
+rule { [$A] apply } => { $A }
+rule { $a quote } => { [$a] }
+rule { [$B] [$A] compose } => { [$B $A] }
+rule { [$B] [$A] rcompose } => { [$A $B] }
+rule { $b [$A] papply } => { [$b $A] }
+rule { $b [$A] app2 } => { $A $b $A }
+
+// More optimizations
+rule { dup $a papply swap pop } => { [x] papply }
+rule { dup $a papply papply } => { [dup x] papply }
+
+// Loop unrolling
+// Not currently performed because of the potential performance hit
+// This is a tricky optimization to apply properly.
+// It needs to be done in a limited context
+// rule { [$A] [$B] while } => { $B [$A [$A] [$B] while] [] if }
+
+// Boolean primitives
+rule { true not } => { false }
+rule { false not } => { true }
+rule { true and } => { }
+rule { false and } => { pop false }
+rule { true or } => { pop true }
+rule { false or } => { }
+
+// Reduction based on the property of commutativity
+rule { swap and } => { and }
+rule { swap or } => { or }
+rule { swap add_int } => { add_int }
+rule { swap mul_int } => { mul_int }
+rule { swap add_byte } => { add_byte }
+rule { swap mul_byte } => { mul_byte }
+rule { dip and } => { apply and }
+rule { dip or } => { apply or }
+rule { dip add_int } => { apply add_int }
+rule { dip mul_int } => { apply mul_int }
+rule { dip add_byte } => { apply add_byte }
+rule { dip mul_byte } => { apply mul_byte }
+
+// short-circuit boolean evaluation
+rule { $a and } => { [$a] [false] if }
+rule { $a or } => { [true] [$a] if }
+
+// List optimizations
+rule { cons uncons } => { }
+rule { uncons cons } => { }
+rule { cons head } => { [pop] dip }
+rule { cons tail } => { pop }
+rule { cons first } => { dup [cons first] dip }
+rule { cons rest } => { [dup] dip cons swap }
+rule { to_list $a to_list cat } => { $a compose to_list }
+rule { to_list $a cons } => { [$a] compose to_list }
+rule { quote to_list } => { unit }
+rule { rev rev } => { }
+
+// Taking and dropping
+rule { 0 take } => { nil }
+rule { 0 drop } => { dup }
+rule { 1 take } => { first unit }
+rule { 1 drop } => { rest }
+rule { count take } => { dup }
+rule { count drop } => { nil }
+
+// Higher order list primitives fusions
+rule { map $a map } => { $a compose map }
+rule { filter $a filter } => { [dup] rcompose [$a apply and] compose filter }
+rule { fold $a map } => { $a compose fold }
+rule { map $b $a fold } => { $a compose $b swap fold }
+rule { filter $b $a fold } => { $b swap [$a [pop] if] compose fold }
+rule { filter $c map $b $a fold } => { $b swap [$a $c compose [pop] if] compose fold }
+
+// Nil list special cases
+rule { nil $a filter } => { nil }
+rule { nil $a map } => { nil }
+rule { nil $b $a fold } => { $b }
+rule { nil rev } => { nil }
+rule { nil tail } => { }
+rule { nil rest } => { nil nil }
+rule { nil flatten } => { nil }
+rule { nil count } => { nil 1 }
+rule { nil empty } => { nil true }
+rule { nil $a cat } => { $a }
+rule { nil cat } => { }
+rule { nil $a split } => { nil nil }
+rule { nil $a take } => { nil }
+rule { nil $a drop } => { nil }
+
+// Unit list special cases
+rule { nil $a cons } => { $a unit }
+rule { unit $a filter } => { $a apply [unit] [pop nil] if }
+rule { unit $a map } => { $a apply unit }
+rule { unit $b $a fold } => { $b swap $a apply }
+rule { unit rev } => { unit }
+rule { unit head } => { }
+rule { unit tail } => { nil }
+rule { unit rest } => { unit nil }
+rule { unit first } => { dup [unit] dip }
+rule { unit last } => { dup [unit] dip }
+rule { unit mid } => { dup [unit] dip }
+rule { unit uncons } => { [nil] dip }
+rule { unit flatten } => { }
+rule { unit $a unit cat } => { $a pair }
+rule { unit count } => { unit 1 }
+rule { unit empty } => { nil false }
+rule { unit cat } => { cons }
+rule { unit pop } => { pop }
+rule { unit $a split } => { $a [unit nil swap] [unit nil] if }
+
+// Pair list special cases
+rule { unit $a unit cat } => { $a pair }
+rule { unit $a cons } => { $a pair }
+rule { pair $a map } => { [$a apply] dip $a apply pair }
+rule { pair $a filter } => { [unit $a filter] dip $a apply [cons] [pop] if }
+rule { pair $b $a fold } => { $b swap $a apply swap $a apply }
+rule { pair rev } => { swap pair }
+rule { pair unpair } => { }
+rule { pair uncons } => { [unit] dip }
+rule { pair head } => { popd }
+rule { pair tail } => { pop unit }
+rule { pair first } => { dup [pair] dip }
+rule { pair rest } => { [dup] dip pair swap unit }
+rule { pair last } => { [dup] dip pair swap }
+rule { pair mid } => { dup [pair] dip }
+rule { pair flatten } => { cat }
+rule { pair count } => { pair 2 }
+rule { pair empty } => { pair false }
+rule { pair pop } => { pop pop }
+
+// Triple list special cases
+rule { pair $a cons } => { triple }
+rule { pair $a unit cat } => { triple }
+rule { unit $b $a pair cat } => { triple }
+rule { triple head } => { popd popd }
+rule { triple tail } => { pop pair }
+rule { triple uncons } => { [pair] dip }
+rule { triple first } => { dup [triple] dip }
+rule { triple last } => { [[dup] dip dip] triple swap }
+rule { triple flatten } => { cat cat }
+rule { triple $b $a fold } => { $b swap $a apply swap $a apply swap $a apply }
+rule { triple $a filter } => { [pair $a filter] dip $a apply [cons] [pop] if }
+rule { triple rev } => { [swap] dip bury triple }
+rule { triple count } => { triple 3 }
+rule { triple empty } => { triple false }
+rule { triple pop } => { pop pop pop }
+
+// More list optimizations
+rule { $d $c $b gen $a map } => { $d $a $c compose $b gen }
+rule { $c $b $a gen empty } => { $c $b $a gen $c $a not }
+rule { n count } => { over [n] dip }
+rule { n empty } => { over [n] dip 0 eq_int }
+rule { 0 nth } => { first }
+rule { 1 nth } => { pair }
+rule { count nth } => { last }
+
+// Vacuous operations
+rule { rest pop } => { }
+rule { first pop } => { }
+rule { mid pop } => { }
+rule { nth pop } => { pop }
+rule { empty pop } => { }
+rule { count pop } => { }
+rule { uncons pop } => { tail }
+
+// Here are the definitions of some of the standard library shuffling functions
+rule { $b $a popd } => { $a }
+rule { $b $a dupd } => { $b $b $a }
+rule { $c $b $a swapd } => { $b $c $a }
+rule { $c $b $a dig } => { $b $a $c }
+rule { $c $b $a bury } => { $a $c $b }
+
+// Typed rules (somewhat experimental)
+rule { dip $B:('a -> 'b) $a dip } => { $a compose dip $B }
+rule { $a swap $B:('a -> 'B) } => { $B $a }
+
+// Oscillation patterns
+// not implemented yet
+// rule { swap } <=> { quote dip }
+// rule { [$A] dip quote } <=> { quote [$A] dip }
+
+// Tail-Call Recursion elimination
+// not implemented yet
+// rule { [$E:('a -> 'a bool) [$D:('a -> 'a)] [$C:('a -> 'a) $B:self $A:('a -> 'a)] if] } => { [$E] [$D] [$C] [$A] tail_rec }

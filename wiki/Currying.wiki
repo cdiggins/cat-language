@@ -1,0 +1,33 @@
+#summary Currying explanation and code example.
+#labels CodeExample,Glossary
+
+= Currying =
+
+Currying is the technique of generating a function from another function by binding one or more arguments to a specific value.
+
+For example given an addition function which takes two argument, I can create an increment function which takes one value by currying the value one as follows:
+
+{{{
+define inc
+{ [1 add] eval }
+}}}
+
+A generic function which binds any argument to any function, i.e. a curry function, looks like the following in Cat:
+
+{{{
+define curry 
+{ [quote] dip compose }
+}}}
+
+Another increment function can be defined as follows:
+
+{{{
+define inc
+{ 1 [add] curry eval }
+}}}
+
+The type signature of the curry function is:
+
+{{{
+curry : ('a ('B 'a -> 'C) -> ('B -> 'C))
+}}}

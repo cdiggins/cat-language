@@ -1,0 +1,17 @@
+#summary Definition of quotation.
+#labels Glossary,CodeExample
+
+= Quotation =
+
+A quotation is a function literal. Quotations have the effect of pushing an anonymous functions on to the stack. A quotation is created by surrounding an expression using the quotation operators `[` and `]`. Quotations can be evaluated using the `apply` primitive.
+
+For example:
+
+{{{
+>> 3
+stack: 3
+>> [1 +]
+stack: 3 [{1} +]
+>> apply
+stack: 4
+}}}

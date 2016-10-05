@@ -1,0 +1,19 @@
+// Dedicated to the public domain by Christopher Diggins
+// This file is free to be used, modified or redistributed for any purpose,
+// without restriction, obligation or warantee.
+// http://www.cdiggins.com
+
+define re_input {
+  "One car red car blue car"
+}
+
+define re_pattern {
+  "(\w+)\s+(car)"
+}
+
+define re_test {
+  re_input re_pattern regex re_match
+}
+
+
+

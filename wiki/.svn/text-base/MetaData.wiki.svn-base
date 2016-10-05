@@ -1,0 +1,34 @@
+#summary About function meta-data.
+
+= About Meta-data =
+
+Cat definitions may include meta-data comments. This is a structured form of comment which is used for documentation and automated unit testing. The layout of Cat meta-data is inspired by the [http://www.yaml.org/ YAML] data-serialization format.
+
+An example of Cat meta-data is:
+
+{{{
+define neq : ('a 'a -> bool)
+{{
+  desc:
+    Pushes true if the top two values on the stack are not equal.
+  test:
+    in: 3 5 neq
+    out: true
+  test:
+    in: 'a' 'a' neq
+    out: false
+}}
+{ eq not }
+}}}
+
+Meta-data is organized as labeled node. The indentation of a label indicates its nesting (e.g. which node is a parent or child node). Everything after a label, until the next label is considered part of the node data, except for leading and trailing whitespace. 
+
+== Automated Testing == 
+
+From the Cat interpreter you can use the `#test` meta-command (e.g. `[neq] #test`) to run all tests contained in the meta-data with a particular command.
+
+You can test all loaded definitions at once using the `#ta` (for test-all) meta-command. 
+
+== Help String Generation == 
+
+Using the `#h` meta-command (e.g. `[neq] #h`) generates help automatically from the meta-data.

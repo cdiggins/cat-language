@@ -1,0 +1,25 @@
+#summary Related languages and projects.
+#labels Featured
+
+The following are links to projects and languages related to [Cat]. 
+
+==Functional Stack-Based Programming Languages==
+
+  * [Joy] 
+  * [http://www.factorcode.org/ Factor]
+
+==Imperative Stack-Based Programming Languages==
+
+  * [http://www.forth.org/ Forth]
+  * [http://home.vr-web.de/stephan.becher/forth/ StrongForth]
+  * [http://partners.adobe.com/public/developer/ps/index_specs.html Postscript]
+
+==Stack-Based Intermediate Languages==
+
+  * [http://www.ecma-international.org/publications/standards/ecma-335.htm MSIL/CLI]
+  * [http://java.sun.com/docs/books/vmspec/2nd-edition/html/VMSpecTOC.doc.html Java byte-code/JVML]
+
+==Functional Languages==
+
+  * [http://swiss.csail.mit.edu/projects/scheme/ Scheme]
+  * [http://www.haskell.org Haskell]

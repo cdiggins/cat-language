@@ -1,0 +1,14 @@
+#summary A brief outline of the favourable characteristics of Cat
+#labels About
+
+= Cat Advantages =
+
+Cat offers several advantages as a programming language: 
+  * excellent performance - Cat can be easily optimized because it is statically type, and the syntax makes it easy to identify fusion algorithms
+  * excellent parallelization - many primitive Cat operations can be easily implemented as parallel operations
+  * improved safety - Cat's static type system provides easy verifiability of code 
+  * compact representations - Cat is very compact because it introduces higher order functions
+  * easy to learn - Cat has a very minimal set of core semantics and syntax
+
+
+ 

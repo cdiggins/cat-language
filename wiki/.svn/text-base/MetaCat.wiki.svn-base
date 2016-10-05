@@ -1,0 +1,10 @@
+#summary About the MetaCat extension to Cat.
+#labels Glossary
+
+= MetaCat =
+
+MetaCat is the name of the extension of Cat language with [Macros macros]. MetaCat is based on the paper [http://www.latrobe.edu.au/philosophy/phimvt/joy/j07rrs.html A Rewriting System for Joy] by Manfred von Thun.
+
+[something]
+
+More information is available at http://www.cat-language.com/metacat.html

@@ -1,0 +1,12 @@
+#summary Definition of higher-order functions.
+#labels Glossary
+
+= Higher Order Functions =
+
+Higher-order functions are functions that either take a function as an argument or return a function as a result. 
+
+The primitive higher-order functions that return new functions in Cat are [Quote quote] and [Compose compose]. These can be used in conjunction with the [Shufflers stack shuffling functions] to create any other function. 
+
+Higher-order functions which accept one or more functions as arguments are often referred to as [Combinators combinators]. The primitive combinators are [Eval eval] and [Dip dip]. 
+
+

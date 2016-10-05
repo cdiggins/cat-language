@@ -1,0 +1,316 @@
+// Dedicated to the public domain by Christopher Diggins
+// This file is free to be used, modified or redistributed for any purpose,
+// without restriction, obligation or warantee.
+// http://www.cdiggins.com
+
+//=============================================================================
+// Dynamically dispatched functions
+
+define neg : (any ~> any)
+{{
+  desc:
+    Negates top values.
+  tags:
+    level1,math
+}}
+{
+  [
+    [neg_int] int_type
+    [neg_dbl] double_type
+  ] list
+  dispatch1
+}
+
+define add : (any any ~> any)
+{{
+  desc:
+    Adds top value to second value.
+  tags:
+    level1,math
+}}
+{
+  [
+    [add_int] int_type
+    [add_dbl] double_type
+    [add_byte] byte_type
+    [add_bit] bit_type
+    [add_str] string_type
+  ] list
+  dispatch2
+}
+
+define sub : (any any ~> any)
+{{
+  desc:
+    Subtracts top value from second value.
+  tags:
+    level1,math
+}}
+{
+  [
+    [sub_int] int_type
+    [sub_dbl] double_type
+    [sub_byte] byte_type
+    [sub_bit] bit_type
+  ] list
+  dispatch2
+}
+
+define mul : (any any -> any)
+{{
+  desc:
+    Multiplies top value to second value.
+  tags:
+    level1,math
+}}
+{
+  [
+    [mul_int] int_type
+    [mul_dbl] double_type
+    [mul_byte] byte_type
+    [mul_bit] bit_type
+  ] list
+  dispatch2
+}
+
+define mod : (any any -> any)
+{{
+  desc:
+    Computes the modulo of the top value from the second value.
+  tags:
+    level1,math
+}}
+{
+  [
+    [mod_int] int_type
+    [mod_dbl] double_type
+    [mod_byte] byte_type
+    [mod_bit] bit_type
+  ] list
+  dispatch2
+}
+
+define div : (any any -> any)
+{{
+  desc:
+    Divides the top value from the second value.
+  tags:
+    level1,math
+}}
+{
+  [
+    [div_int] int_type
+    [div_dbl] double_type
+    [div_byte] byte_type
+    [div_bit] bit_type
+  ] list
+  dispatch2
+}
+
+define lt : (any any -> bool)
+{{
+  desc:
+    Pushes true if the top value is less than the second value, false otherwise.
+  tags:
+    level1,math
+}}
+{
+  [
+    [lt_int] int_type
+    [lt_dbl] double_type
+    [lt_byte] byte_type
+    [lt_bit] bit_type
+    [lt_str] string_type
+  ] list
+  dispatch2
+  as_bool
+}
+
+define gt : (any any -> bool)
+{{
+  desc:
+    Pushes true if the top value is greater than the second value, false otherwise.
+  tags:
+    level1,math
+}}
+{
+  [
+    [gt_int] int_type
+    [gt_dbl] double_type
+    [gt_byte] byte_type
+    [gt_bit] bit_type
+    [gt_str] string_type
+  ] list
+  dispatch2
+  as_bool
+}
+
+define lteq : (any any -> bool)
+{{
+  desc:
+    Pushes true if the top value is less than or equal to the second value, false otherwise.
+  tags:
+    level1,math
+}}
+{
+  [
+    [lteq_int] int_type
+    [lteq_dbl] double_type
+    [lteq_byte] byte_type
+    [lteq_bit] bit_type
+    [lteq_str] string_type
+  ] list
+  dispatch2
+  as_bool
+}
+
+define gteq : (any any -> bool)
+{{
+  desc:
+    Pushes true if the top value is greater than or equal to the second value, false otherwise.
+  tags:
+    level1,math
+}}
+{
+  [
+    [gteq_int] int_type
+    [gteq_dbl] double_type
+    [gteq_byte] byte_type
+    [gteq_bit] bit_type
+    [gteq_str] string_type
+  ] list
+  dispatch2
+  as_bool
+}
+
+//=============================================================================
+// Mathematical definitions
+
+define sqr : (any -> any)
+{{
+  desc:
+    Multiplies a value by itself
+  test:
+    in: 3 sqr
+    out: 9
+  tags:
+    level1,math
+}}
+{ dup mul }
+
+define frac : (int int int -> int)
+{{
+  desc:
+    Multiplies an integer by a fraction.
+    x num den -> (x * num) / den)
+  test:
+    in: 6 2 3 frac
+    out: 4
+  semantics:
+    $a $b $c frac == $a $b mul_int $c div_int
+  tags:
+    level1,math
+}}
+{ [mul_int] dip div_int }
+
+//=============================================================================
+// Mathematical symbols
+
+define +
+{{
+  desc:
+    A symbolic form of add.
+  tags:
+    level1,math
+}}
+{ add }
+
+define -
+{{
+  desc:
+    A symbolic form of sub.
+  tags:
+    level1,math
+}}
+{ sub }
+
+define *
+{{
+  desc:
+    A symbolic form of mul.
+  tags:
+    level1,math
+}}
+{ mul }
+
+define %
+{{
+  desc:
+    A symbolic form of mod.
+  tags:
+    level1,math
+}}
+{ mod }
+
+define /
+{{
+  desc:
+    A symbolic form of div.
+  tags:
+    level1,math
+}}
+{ div }
+
+define <
+{{
+  desc:
+    A symbolic form of lt.
+  tags:
+    level1,math
+}}
+{ lt }
+
+define >
+{{
+  desc:
+    A symbolic form of gt.
+  tags:
+    level1,math
+}}
+{ gt }
+
+define <=
+{{
+  desc:
+    A symbolic form of lteq.
+  tags:
+    level1,math
+}}
+{ lteq }
+
+define >=
+{{
+  desc:
+    A symbolic form of gteq.
+  tags:
+    level1,math
+}}
+{ gteq }
+
+define ==
+{{
+  desc:
+    A symoblic form of eq
+  tags:
+    level1,math
+}}
+{ eq }
+
+define !=
+{{
+  desc:
+    A symbolic form of neq (not equals).
+  tags:
+    level1,math
+}}
+{ neq }

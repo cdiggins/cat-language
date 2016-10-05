@@ -1,0 +1,11 @@
+#summary About partial evaluation.
+#labels Glossary,Usage
+
+= Partial Evaluation =
+
+Partial evaluation refers to the evaluation of sub-expressions. Given the [Expression expression] `[3 4 * +] #p` a compiler will replace the sub-expression `3 4 *` with the value `12` so that the result is: `[12 +]`. 
+
+Only [Purity pure] expressions can pre-evaluated.
+
+The [MetaCommand meta-command] for performing partial-evaluation is `#p`. 
+

@@ -1,0 +1,26 @@
+#summary Explanation of Cat implementation levels.
+#labels Glossary
+
+= Levels =
+
+The Cat specification is divided into several different levels of compatibility. Different Cat implementations may have varying degrees of compatibility with the Cat standard. For example a Cat implementation that provides the complete set of Level-0 primitives, and only some of the Level-1 primitives would be said to be a "Level-0 Compliant Implementation of Cat". 
+
+Each level of compliance implies that all lower levels are also fully supplied.
+
+Level-0, Level-1 and Level-2 do not permit [SideEffect side-effects]. Level-3 and above do. 
+
+  A Level-0 Cat implementation provides only a small set of functions for operating on the following types: `int`, `bool`, `var`, and `list`. For a list of all Level-0 primitives see http://www.cat-language.com/primitives.html#level0
+
+  A Level-1 Cat implementation provides a large set of predefined primitive functions that can all be built entirely from Level-0 primitives. For a list of all Level-1 primitives see http://www.cat-language.com/primitives.html#level1
+
+  A Level-2 Cat implementation introduces additional types: `byte`, `char`, `string`, `dbl`, `bit`, `byte_block`, `hash_list`. 
+
+  A Level-3 Cat implementation introduces dynamic function dispatching based on type ([AdHocPolymorphism ad-hoc polymorphism]) and [Exceptions exceptions]. 
+  
+  A Level-4 Cat implementation introduces features that require an operating system. Level-4 compliance requires the following types: `istream`, `ostream`. 
+
+  A Level-5 Cat implementation introduces features that require a graphical user interface. Level-5 Cat allows side-effects.
+
+== For More Information ==
+
+http://www.cat-language.com/manual.html#compat

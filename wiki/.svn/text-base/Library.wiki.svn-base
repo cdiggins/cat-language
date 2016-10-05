@@ -1,0 +1,326 @@
+#summary An explanation and copy of the standard library.
+
+= Standard Library =
+
+The standard library is called "standard.cat". This file contains definitions of commonly used functions expressed in terms of the [Primitives built-in primitive functions]. This is similar in concept to the Haskell standard prelude. 
+
+Below is a copy of the standard library made on April 2nd, 2007
+You can browse the most current version of the standard library online at http://cat-language.googlecode.com/svn/trunk/cat/ 
+
+I should point out that the tests are still under development, so the following code isn't guaranteed to be correct.
+
+{{{
+//
+// Cat Standard Library
+// by Christopher Diggins
+// http://www.cdiggins.com
+// this file is public domain
+
+//=============================================================================
+// Basic shuffling operators
+
+define swapd : ('a 'b 'c -> 'b 'a 'c)
+{ [swap] dip }
+
+define swapdd : ('a 'b 'c 'd -> 'b 'a 'c 'd)
+{ [swapd] dip }
+
+define dupd : ('a 'b -> 'a 'a 'b)
+{ [dup] dip }
+
+define dupdd : ('a 'b 'c -> 'a 'a 'b 'c)
+{ [dupd] dip }
+
+define popd : ('a 'b -> 'b)
+{ [pop] dip }
+
+define popdd : ('a 'b 'c -> 'b 'c)
+{ [popd] dip }
+
+define dup2 : ('a -> 'a 'a 'a )
+{ dup dup }
+
+define pop2 : ('a 'b -> )
+{ pop pop }
+
+define dup3 : ('a -> 'a 'a 'a 'a )
+{ dup dup dup dup }
+
+define pop3 : ('a 'b 'c -> )
+{ pop pop pop pop }
+
+define dup4 : ('a -> 'a 'a 'a 'a 'a )
+{ dup dup dup dup }
+
+define pop4 : ('a 'b 'c 'd -> )
+{ pop pop pop pop }
+
+ define nip : ('a 'b -> 'b)
+{ popd }
+
+define over : ('a 'b -> 'a 'b 'a)
+{ dupd swap }
+
+define under : ('a 'b -> 'b 'a 'b)
+{ dup swapd }
+
+define flip : ('a 'b 'c -> 'c 'b 'a)
+{ swapd swap swapd }
+
+define bury : ('a 'b 'c -> 'c 'a 'b)
+{ swap swapd }
+
+define dig : ('a 'b 'c -> 'b 'c 'a)
+{ swapd swap }
+
+define peek : ('a 'b 'c -> 'a 'b 'c 'a)
+{ dupdd dig }
+
+define poke : ('a 'b 'c -> 'c 'b)
+{ popdd swap }
+
+//==============================================================================
+// Argument list manipulation
+
+// Declares an empty argument list
+define arg_list : ( -> list)
+{ nil }
+
+// Argument accessors
+define arg0 : (list -> var list)  { 0 nth swap }
+define arg1 : (list -> var list) { 1 nth swap }
+define arg2 : (list -> var list) { 2 nth swap }
+define arg3 : (list -> var list) { 3 nth swap }
+define arg4 : (list -> var list) { 4 nth swap }
+define arg5 : (list -> var list) { 5 nth swap }
+define arg6 : (list -> var list) { 6 nth swap }
+define arg7 : (list -> var list) { 7 nth swap }
+define arg8 : (list -> var list) { 8 nth swap }
+define arg9 : (list -> var list) { 9 nth swap }
+
+// Used for converting from quotations inside of functions with named
+// arguments to point-free form by prepending the argument list.
+define embed_args
+{ [dup quote] dip compose swap }
+
+//=============================================================================
+// Common predicates.
+// Predicate usually have the form: 'A -> 'A bool
+
+define eqz : (int -> int bool)  { dup 0 eq }
+define neqz : (int -> int bool) { eqz not }
+define gtz : (int -> int bool) { dup 0 gt }
+define gteqz : (int -> int bool) { dup 0 gteq }
+define ltz : (int -> int bool) { dup 0 lt }
+define lteqz : (int -> int bool) { dup 0 lteq }
+
+// Not really a predicate, but used to generate predicate
+define modn : (int int -> int bool) { dupd mod 0 eq }
+
+define even : (int -> int bool) { 2 modn }
+define odd : (int -> int bool) { dup inc mod 0 eq }
+
+//=============================================================================
+// predicate generation functions
+
+define ltf : ('a -> ('a -> 'a bool))
+{ [dupd lt] curry }
+
+define lteqf : ('a -> ('a -> 'a bool))
+{ [dupd lteq] curry }
+
+define gtf : ('a -> ('a -> 'a bool))
+{ [dupd gt] curry }
+
+define gteqf : ('a -> ('a -> 'a bool))
+{ [dupd gteq] curry }
+
+define eqf : ('a -> ('a -> 'a bool))
+{ [dupd eq] curry }
+
+define neqf : ('a -> ('a -> 'a bool))
+{ [dupd neq] curry }
+
+define modnf : (int int -> (int -> int bool))
+{ [dupd modn] curry }
+
+//=============================================================================
+// Additional mathematical definitions
+
+define inc : (int -> int) { 1 add }
+define dec : (int -> int) { 1 sub }
+
+//=============================================================================
+// Mathematical symbols
+
+define + { add }
+define - { sub }
+define * { mul }
+define % { mod }
+define / { div }
+define < { lt }
+define > { gt }
+define <= { lteq }
+define >= { gteq }
+define == { eq }
+define != { neq }
+
+//=============================================================================
+// Additional combinators
+
+// Sometime called "slip"
+define swip : ('A ('A -> 'B) 'c -> 'B 'c)
+{ swap dip }
+
+// Sometimes called "sip"
+define keep : ('A 'b ('A 'b -> 'C) -> 'C 'b)
+{ dupd dip }
+
+define sweep : ('A ('A 'b -> 'C) 'b -> 'C 'b)
+{ swap keep }
+
+define dip2 : ('A 'b 'c ('A -> 'D) -> 'D 'b 'c)
+{ swap [dip] swip }
+
+define dip3 : ('A 'b 'c 'd ('A -> 'E) -> 'E 'b 'c 'd)
+{ swap [dip2] swip }
+
+define dip4 : ('A 'b 'c 'd 'e ('A -> 'F) -> 'F 'b 'c 'd 'e)
+{ swap [dip3] swip }
+
+//=============================================================================
+// List operators
+
+define (
+{ nil }
+
+define ,
+{ cons }
+
+define )
+{ cons }
+
+define swons : (var list -> list)
+{ swap cons }
+
+define uncons : (list -> list var)
+{ head [tail nip] dip }
+
+define uncons2 : (list -> list var var)
+{ uncons [uncons] dip }
+
+define uncons3 : (list -> list var var var)
+{ uncons [uncons2] dip }
+
+define uncons4 : (list -> list var var var var)
+{ uncons [uncons3] dip }
+
+define first2 : (list -> var var)
+{ uncons [first] dip }
+
+define first3  : (list -> var var var)
+{ uncons [first2] dip }
+
+define first4 : (list -> var var var var)
+{ uncons [first3] dip }
+
+define range : (int int -> list)
+{ ltf [inc] gen }
+
+define n : (int -> list)
+{ 0 swap range }
+
+define flatten : (list -> list)
+{ nil [cat] foldl }
+
+// Returns true iff any value satisfies the condition
+// Could be optimized
+define any : (list ('a -> bool) -> bool)
+{ dupd [or] compose false swap foldl }
+
+// Returns true iff all values satisfy the condition
+// Could be optimized
+define all : (list ('a -> bool) -> bool)
+{ dupd [and] compose true swap foldl }
+
+//=============================================================================
+// Infinite list generators
+
+define naturals : ( -> list)
+{ 0 [true] [inc] gen }
+
+define odds : ( -> list)
+{ 1 [true] [inc] gen  }
+
+define evens : ( -> list)
+{ 0 [true] [inc] gen  }
+
+define negatives : ( -> list)
+{ 1 neg [true] [dec] gen }
+
+//=============================================================================
+// Function manipulation operators
+
+define curry : ('a ('B 'a -> 'C) -> ('B -> 'C))
+{ [quote] dip compose }
+
+define curry2 : ('a 'b ('C 'a 'b -> 'D) -> ('C -> 'D))
+{ curry curry }
+
+define curry3 : ('a 'b 'c ('D 'a 'b 'c -> 'E) -> ('D -> 'E))
+{ curry curry curry }
+
+define curry4 : ('a 'b 'c 'd ('E 'a 'b 'c 'd -> 'F) -> ('E -> 'F))
+{ curry curry curry curry }
+
+define curry5 : ('a 'b 'c 'd 'e ('F 'a 'b 'c 'd 'e -> 'G) -> ('F -> 'G))
+{ curry curry curry curry curry }
+
+define rcurry : (('B 'a -> 'C) 'a -> ('B -> 'C))
+{ quote swap compose }
+
+//==============================================================================
+// Looping constructions
+
+define repeat : ('A ('A -> 'A) int -> 'A)
+{ swap [swip dec] curry [neqz] while pop }
+
+// reverse for loop
+define rfor : ('A ('A int -> 'A) int -> 'A)
+{ swap [sweep dec] curry [neqz] while pop }
+
+//==============================================================================
+// Vector functions
+
+define sum : (list -> var)
+{ 0 [+] foldl }
+
+//==============================================================================
+// Hash helper functions
+
+// Gets a value from a hash_list. If it doesn't exist then uses the default
+define hash_safe_get : (hash_list key=var default=var -> hash_list var)
+{
+  [[hash_contains] keep] dip // => hash_list bool key default
+  quote                      // => hash_list bool key [default]
+  [[hash_get] curry] dip     // => hash_list bool [key hash_get] [default]
+  if                         // => hash_list result
+}
+
+// Adds an element as unit list to a hash_list if it doesn't exist,
+// otherwise chain it to the current list item.
+define hash_add_chain : (hash_list key=var value=var -> hash_list)
+{
+  [[nil hash_safe_get] keep] dip // => hash_list curr key value
+  swapd cons                     // => hash_list key list(curr, value)
+  hash_set                       // => hash_list
+}
+
+define list_to_hash : (list -> hash_list)
+{  hash_list [uncons swap hash_add_chain] foldl }
+
+// performs an inner self-join on a list of lists based the first item.
+define self_join : (list -> list)
+{ list_to_hash hash_to_list }
+
+}}}

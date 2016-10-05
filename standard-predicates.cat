@@ -1,0 +1,257 @@
+//=============================================================================
+// Predicates and comparison functions
+
+define gtz : (int -> bool)
+{{
+  tags:
+    level1,boolean
+}}
+{ 0 gt_int }
+
+define gteqz : (int -> bool)
+{{
+  tags:
+    level1,boolean
+}}
+{ 0 gteq_int }
+
+define ltz : (int -> bool)
+{{
+  tags:
+    level1,boolean
+}}
+{ 0 lt_int }
+
+define lteqz : (int -> bool)
+{{
+  tags:
+    level1,boolean
+}}
+{ 0 lteq_int }
+
+define even : (any -> any bool)
+{{
+  tags:
+    level1,boolean
+}}
+{ 2 modn }
+
+define odd : (any -> any bool) {{
+  tags:
+    level1,boolean
+}}
+{ even not }
+
+define is_eq : ('t 't -> 't bool)
+{{
+  tags:
+    level1,boolean
+}}
+{ dupd eq }
+
+define is_neq : ('t 't -> 't bool)
+{{
+  tags:
+    level1,boolean
+}}
+{ dupd neq }
+
+define is_gt : (any any -> any bool)
+{{
+  tags:
+    level1,boolean
+}}
+{ dupd gt }
+
+define is_gteq : (any any -> any bool)
+{{
+  tags:
+    level1,boolean
+}}
+{ dupd gteq }
+
+define is_lt : (any any -> any bool)
+{{
+  tags:
+    level1,boolean
+}}
+{ dupd lt }
+
+define is_lteq : (any any -> any bool)
+{{
+  tags:
+    level1,boolean
+}}
+{ dupd lteq }
+
+define is_eqz : ('t -> 't bool)
+{{
+  tags:
+    level1,boolean
+}}
+{ dup 0 eq }
+
+define is_neqz : ('t -> 't bool)
+{{
+  tags:
+    level1,boolean
+}}
+{ dup 0 neq }
+
+define is_gtz : (any -> any bool)
+{{
+  tags:
+    level1,boolean
+}}
+{ dup 0 gt }
+
+define is_gteqz : (any -> any bool)
+{{
+  tags:
+    level1,boolean
+}}
+{ dup 0 gteq }
+
+define is_ltz : (any -> any bool)
+{{
+  tags:
+    level1,boolean
+}}
+{ dup 0 lt }
+
+define is_lteqz : (any -> any bool)
+{{
+  tags:
+    level1,boolean
+}}
+{ dup 0 lteq }
+
+define are_eq : ('t 't -> 't 't bool)  { dup2 eq }
+define are_neq : ('t 't -> 't 't bool) { dup2 neq }
+define are_gt : (any any -> any any bool) { dup2 gt }
+define are_gteq : (any any -> any any bool) { dup2 gteq }
+define are_lt : (any any -> any any bool) { dup2 lt }
+define are_lteq : (any any -> any any bool) { dup2 lteq }
+
+//=============================================================================
+// Predicate generation functions
+
+define ltf : (any -> (any -> bool))
+{ [lt] papply }
+
+define lteqf : (any -> (any -> bool))
+{ [lteq] papply }
+
+define gtf : (any -> (any -> bool))
+{ [gt] papply }
+
+define gteqf : (any -> (any -> bool))
+{ [gteq] papply }
+
+define eqf : ('a -> ('a -> bool))
+{ [eq] papply }
+
+define neqf : ('a -> ('a -> bool))
+{ [neq] papply }
+
+define modnf : (any -> (any -> bool))
+{ [modn] papply }
+
+//=============================================================================
+
+define is_ltf : (any -> (any -> bool))
+{ [is_lt] papply }
+
+define is_lteqf : (any -> (any -> bool))
+{ [is_lteq] papply }
+
+define is_gtf : (any -> (any -> bool))
+{ [is_gt] papply }
+
+define is_gteqf : (any -> (any -> bool))
+{ [is_gteq] papply }
+
+define is_eqf : ('a -> ('a -> bool))
+{ [is_eq] papply }
+
+define is_neqf : ('a -> ('a -> bool))
+{ [is_neq] papply }
+
+//=============================================================================
+// Comparison predicates
+
+define compare_lt : (any any -> any any bool)
+{ dup2 lt }
+
+define compare_lteq : (any any -> any any bool)
+{ dup2 lteq  }
+
+define compare_gt : (any any -> any any bool)
+{ dup2 gt }
+
+define compare_gteq : (any any -> any any bool)
+{ dup2 lt }
+
+// The default comparison predicate uses lteq ( <= )
+define compare : (any any -> any any bool)
+{ compare_lteq }
+
+//=================================================================
+// Extended control flow
+
+define if_pred : ('A ('A -> 'A) ('A -> 'A bool) -> 'A)
+{{
+  desc:
+    Executes a function only if the predicate is true.
+}}
+{
+  dip [] if
+}
+
+define ifeq : ('A 'b ('A -> 'A) 'b -> 'A 'b)
+{{
+  desc:
+    Executes a function if the value below it is equal to a given value.
+  test:
+    in: 3 1 [[inc] dip] 1 ifeq
+    out: 4 1
+  test:
+    in: 3 2 [[inc] dip] 1 ifeq
+    out: 3 2
+}}
+{
+  is_eqf if_pred
+}
+
+define ifneq : ('A 'b ('A -> 'A) 'b -> 'A 'b)
+{{
+  desc:
+    The negation of ifeq
+}}
+{
+  is_neqf if_pred
+}
+
+define ifeqz : ('A int ('A -> 'A) -> 'A)
+{{
+  desc:
+    Executes a function if the value below it is zero
+  test:
+    in: 3 1 [[inc] dip] ifeqz
+    out: 3 1
+  test:
+    in: 3 0 [[inc] dip] ifeqz
+    out: 4 0
+}}
+{
+  0 ifeq
+}
+
+define ifneqz : ('A int ('A -> 'A) -> 'A)
+{{
+  desc:
+    Executes a function if the value below it is not zero
+}}
+{
+  0 ifneq
+}

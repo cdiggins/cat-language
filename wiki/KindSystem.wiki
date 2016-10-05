@@ -1,0 +1,19 @@
+#summary Definition of a kind system.
+#labels Glossary,Theory
+
+= Definition of a Kind System =
+
+A kind system is a system for distinguishing between type variables and type functions in much the same way a type system can be used to distinguish between single values (primitive types), groups of values (record types), functions on values (function types), and so forth.
+
+== Kinds in C++ ==
+
+A C++ template (e.g. `std::vector`) is an example of a type function in that it can be used to construct a type (e.g. `std::vector<int>`) but it itself is not a type. To formally describe the type system of C++ we would have to resort to separating categories of types to describe the relationship between types and templates. In effect we would have to resort to using a kind system to create separate categories for types and for templates. These categories are called kinds 
+
+== Kinds in Cat ==
+
+The usage of a kind system approach is also required in Cat to differentiate between different sets of function types. When I want to refer to any function that pops a single value from a stack and pushes another value on the type I have to say it has type: {{{('a -> 'b)}}}, where 'a and 'b are type variables (I know this because they start with a lowercase letter). However if I want to refer to all functions I have to say: {{{('A -> 'B)}}} where 'A and 'B are stack variables (the name starts with an uppercase letter). The stack variable means zero or more values on the stack. 
+
+If I were to refer to any function that takes two parameters I would express it as: {{{('a 'b -> 'C)}}}. 
+
+It we think of type variables as containing a single type, and stack variables as containing sets of types, we need to differentiate between them formally (to avoid [RussellsParadox Russell's paradox]) by saying that type variables and stack variables have separate kinds. 
+

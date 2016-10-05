@@ -1,0 +1,386 @@
+// Dedicated to the public domain by Christopher Diggins
+// This file is free to be used, modified or redistributed for any purpose,
+// without restriction, obligation or warantee.
+// http://www.cdiggins.com
+
+define swons : ('a list -> list)
+{{
+  desc:
+    Appends the second item on the stack, to a list in the first item
+  test:
+    in: 3 [1 2] list swons
+    out: [1 2 3] list
+  tags:
+    level1,lists
+}}
+{
+  swap cons
+}
+
+define unit : (any -> list)
+{{
+  desc:
+    Creates a list containing one element, which is taken from the top
+    of the stack
+  test:
+    in: 42 unit
+    out: [42] list
+  tags:
+    level1,lists
+}}
+{
+  nil swons
+}
+
+define head : (list -> any)
+{{
+  desc:
+    Replaces a list with the first item
+  test:
+    in: [1 2 3] list head
+    out: 3
+  tags:
+    level1,lists
+}}
+{
+  uncons popd
+}
+
+define tail : (list -> list)
+{{
+  desc:
+    Removes first item from the list
+  test:
+    in: [1 2 3] list tail
+    out: [1 2] list
+  tags:
+    level1,lists
+}}
+{
+  uncons pop
+}
+
+define first : (list -> list any)
+{{
+  desc:
+    Returns the first item in a list
+  test:
+    in: [1 2 3] list first
+    out: [1 2 3] list 3
+  tags:
+    level1,lists
+}}
+{
+  0 get_at
+}
+
+define rest : (list -> list list)
+{{
+  desc:
+    Returns a list with one less item
+  test:
+    in: [1 2 3] list rest
+    out: [1 2 3] list [1 2] list
+  tags:
+    level1,lists
+}}
+{
+  dup tail
+}
+
+define consd
+{{
+  desc:
+    Append the second item on stack to a list in the third position.
+  test:
+    in: [1 2] list 3 4 consd
+    out: [1 2 3] list 4
+  tags:
+    level1,lists
+}}
+{ [cons] dip }
+
+define pair : ('a 'b -> list)
+{{
+  desc:
+    Creates a list of two items
+  test:
+    in: 1 2 pair
+    out: [1 2] list
+  tags:
+    level1,lists
+}}
+{
+  nil bury [cons] dip cons
+}
+
+define triple : ('a 'b 'c -> list)
+{{
+  desc:
+    Creates a list of three items
+   test:
+    in: 1 2 3 triple
+    out: [1 2 3] list
+  tags:
+    level1,lists
+}}
+{ [pair] dip cons }
+
+define uncons2 : (list -> list any any)
+{{
+  desc:
+    Extracts the first and second item from a list
+  test:
+    in: [1 2 3] list uncons2
+    out: [1] list 2 3
+  tags:
+    level1,lists
+}}
+{
+  uncons [uncons] dip
+}
+
+define unpair : (list -> any any)
+{{
+  desc:
+    Extracts the first and second item from a list
+  test:
+    in: [1 2] list unpair
+    out: 1 2
+  tags:
+    level1,lists
+}}
+{
+  uncons [head] dip
+}
+
+define fold : (list 'a ('a 'b -> 'a) -> 'a)
+{{
+  desc:
+    Also known as a reduce function, this combines adjacent values
+    in a list using an initial value and a binary function.
+  semantics:
+    define fold(xs x f) { xs empty [x] [xs uncons x swap f apply f fold] if }
+  test:
+    in: [1 2 3 4] list 0 [add_int] fold
+    out: 10
+  test:
+    in: [1 2 3 4] list 0 [popd] fold
+    out: 1
+  tags:
+    level0,lists
+}}
+{
+  dig empty [pop2] [uncons swap [swap keep] dip bury fold] if
+}
+
+define foldwlist : ('R list 'a ('R list 'a 'b -> 'a) -> 'R 'a)
+{{
+  desc:
+    Like fold except the list being folded is an argument to the function.
+  tags:
+    level1,lists
+}}
+{
+  [empty] dip2 dig [pop popd] [[[uncons] dip swap] dip keep fold] if
+}
+
+define rev : (list -> list)
+{{
+  desc:
+    Reverses a list
+  test:
+    in: [1 2 3] list rev
+    out: [3 2 1] list
+  tags:
+    level1,lists
+}}
+{
+  nil [cons] fold
+}
+
+define rfold
+{{
+  desc:
+    A reverse fold, it combines adjacent values
+    in a list using an initial value and a binary function, starting
+    with the last value in the list.
+  semantics:
+    define rfold(xs x f) { xs empty dig [x] [uncons f rfold x f apply] if }
+  test:
+    in: [1 2 3 4] list 0 [add_int] rfold
+    out: 10
+  test:
+    in: [1 2 3 4] list 0 [popd] rfold
+    out: 4
+  test:
+    in: [1 2 3 4] list nil [cons] rfold
+    out: [1 2 3 4] list
+  tags:
+    level1,lists
+}}
+{
+  [rev] dip2 fold
+}
+
+define small : (list -> list bool)
+{{
+  desc:
+    Returns true if a list contains one element or is empty
+  test:
+    in: 1 unit small popd
+    out: true
+  tags:
+    level1,lists
+}}
+{
+  empty [true] [rest empty popd] if
+}
+
+define filter : (list ('a -> bool) -> list)
+{{
+  desc:
+    Creates a list from another keeping only values for which the predicate is true
+  semantics:
+    define filter(xs pred) { xs nil [dup pred [cons] [pop] if] rfold }
+  test:
+    in: [1 2 3 4] list [even] filter
+    out: [2 4] list
+  tags:
+    level1,lists
+}}
+{
+  [dupd apply [cons] [pop] if]
+  papply nil swap rfold
+}
+
+define split : (list ('a -> bool) -> list list)
+{{
+  desc:
+    Splits a list into two new lists
+  test:
+    in: [0 1 2 3 4] list [even] split
+    out: [1 3] list [0 2 4] list
+  tags:
+    level1,lists
+}}
+{
+  nil bury nil swap [dupd apply [cons] [swapd cons swap] if] papply rfold
+}
+
+define cons_first : (list 'a -> list)
+{{
+  desc:
+    Appends item to first list in a pair of lists
+  test:
+    in: [1 2] list [3 4] list pair 5 cons_first
+    out: [1 2] list [3 4 5] list pair
+  tags:
+    level2,lists
+}}
+{
+  [unpair] dip cons pair
+}
+
+define cons_second : (list 'a -> list)
+{{
+  desc
+    Appends item to second list in a pair of lists
+  test:
+    in: [1 2] list [3 4] list pair 5 cons_second
+    out: [1 2 5] list [3 4] list pair
+  tags:
+    level2,lists
+}}
+{
+  [unpair] dip swap [cons] dip pair
+}
+
+define move_head : (list list -> list list)
+{{
+  desc:
+    Copies the head from one list to another.
+  test:
+    in: [1 2] list [3 4] list move_head
+    out: [1 2 4] list [3] list
+  tags:
+    level1,lists
+}}
+{
+  uncons swap [cons] dip
+}
+
+define split_at : (list int -> list list)
+{{
+  desc:
+    Splits a list in two at an index, the top result contains the second part
+    and the second result contains the first part of the original list
+  test:
+    in: [1 2 3 4] list 1 split_at
+    out: [4] list [1 2 3] list
+  tags:
+    level1,lists
+}}
+{
+  nil bury [move_head] swap repeat
+}
+
+define head_eq : (list any -> list bool)
+{{
+  desc:
+    Returns true if the head of a list is equal to the value on the top
+    of the stack.
+  test:
+    in: [1 2] list 2 head_eq popd
+    out: true
+   test:
+    in: [1 2] list 1 head_eq popd
+    out: false
+  tags:
+    level1,lists
+}}
+{
+  [first] dip eq
+}
+
+define cat : (list list -> list)
+{{
+  desc:
+    Concatenates two lists together
+  test:
+    in: [1 2] list [3 4] list cat
+    out: [1 2 3 4] list
+  tags:
+    level1,lists
+}}
+{
+  swap [cons] rfold
+}
+
+define flatten : (list -> list)
+{{
+  desc:
+    Converts a list of lists into a single list, by appending them together
+  test:
+    in: [[1 2] list [3] list [] list] list flatten
+    out: [1 2 3] list
+  tags:
+    level1,lists
+}}
+{
+  nil [cat] rfold
+}
+
+define n : (int -> list)
+{{
+  desc:
+    Constructs a list of consectutive numbers from 0 to n-1
+  test:
+    in: 4 n
+    out: [3 2 1 0] list
+  tags:
+    level1,lists
+}}
+{
+  nil [cons] dig for rev
+}

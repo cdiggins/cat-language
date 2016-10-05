@@ -1,0 +1,25 @@
+#summary Explains the pair standard library function, and the pair type.
+#labels Library,CodeExample,Type
+
+= The pair Library Function =
+
+The pair library function removes two values from the stack and pushes a list containing two items. The top item is in the first position, and the second item is in the second position.
+
+== Implementation ==
+
+{{{
+define pair : ('second 'first -> list)
+{ [unit] dip cons } 
+}}}
+
+== Usage ==
+
+{{{
+>> 1 2 3 pair
+stack: 1 (2, 3)
+}}} 
+
+= The pair Data Type =
+
+Pair is not yet a separate data type, but is expected to have an actual type in later versions of Cat. The term is currently used to describe list types that have two elements.
+

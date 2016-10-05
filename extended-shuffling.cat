@@ -1,0 +1,117 @@
+
+// ==================================
+// Stack shuffling mnemonic operators
+
+// 1 to 2
+define aa { dup }
+
+// 2 to 2
+define ab { }
+define bb { pop dup }
+define ba { swap }
+
+// 3 to 3
+define abc { }
+define acb { swap }
+define bac { [swap] dip }
+define bca { [swap] dip swap }
+define cab { swap [swap] dip }
+define cba { cab swap }
+
+// 4 to 4
+define abcd { }
+define abdc { swap }
+define acdb { bca }
+define acbd { bac }
+define adbc { cab }
+define adcb { cba }
+define bacd { [bac] dip }
+define badc { bacd swap }
+define bcad { bacd bac }
+define bcda { bacd bca }
+define bdac { bacd cab }
+define bdca { bacd cba }
+define cabd { [cab] dip }
+define cadb { cabd swap }
+define cbad { cabd bac }
+define cbda { cabd bca }
+define cdab { cabd cab }
+define cdba { cabd cba }
+define dabc { swap [cab] dip }
+define dacb { dabc swap }
+define dbac { dabc bac }
+define dbca { dabc bca }
+define dcab { dabc cab }
+define dcba { dabc cba }
+
+// 1 to 3
+define aaa { dup dup }
+
+// 1 to 4
+define aaaa { dup dup dup }
+
+// 2 to 3
+define aab { [dup] dip }
+define aba { [dup] dip swap }
+define baa { swap dup }
+define bba { swap [dup] dip }
+define bab { dup cab }
+define abb { dup }
+define bbb { [pop] dip dup dup }
+
+// 2 to 4
+define aaab { [aaa] dip }
+define aaba { aaab swap }
+define abaa { aba dup }
+define baaa { swap aaa }
+define aabb { aab dup }
+define abab { aba aba }
+define abba { abab swap }
+define baab { bab aab }
+define bbba { swap aaab }
+define bbab { bbba swap }
+define babb { bab dup }
+define abbb { abb dup }
+define bbbb { [pop] dip aaaa }
+
+// 3 to 4
+define aabc { [aab] dip }
+define aacb { acb aabc }
+define bbac { bac aabc }
+define bbca { bca aabc }
+define ccab { cab aabc }
+define ccba { cba aabc }
+define abac { [aba] dip }
+define acab { acb abac }
+define babc { bac abac }
+define bcba { bca abac }
+define cacb { cab abac }
+define cbca { cba abac }
+define abcc { dup }
+define acbb { acb dup}
+define bcaa { bca dup }
+define bacc { bac dup }
+define cabb { cab dup }
+define cbaa { cba dup }
+define abca { aabc bca }
+define cabc { cab abca }
+define bacb { bac abca }
+define cbac { cba abca }
+define bcab { bca abca }
+define acba { acb abca}
+define abbc { aab }
+define bcca { bca abbc }
+define cbba { cba abbc }
+define caab { cab abbc }
+define accb { acb abbc }
+define baac { bac abbc }
+
+// Copying operators
+define dup_ab { abab }
+define dup_ba { abba }
+define dup_abc { abca abca abca }
+define dup_acb { dup_abc acb }
+define dup_bac { dup_abc bac }
+define dup_bca { dup_abc bca }
+define dup_cab { dup_abc cab }
+define dup_cba { dup_abc cba }

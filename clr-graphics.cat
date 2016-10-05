@@ -1,0 +1,148 @@
+// Dedicated to the public domain by Christopher Diggins
+// This file is free to be used, modified or redistributed for any purpose,
+// without restriction, obligation, or warantee.
+// http://www.cdiggins.com
+
+//=============================================================================
+
+define ow
+{ open_window }
+
+define cw
+{ close_window }
+
+define sw
+{ save_window }
+
+define line_to
+{ unit swons 0 cons 0 cons "Line" render }
+
+define move_to
+{ unit swons "Slide" render }
+
+define fd
+{ dup 0 line_to 0 move_to}
+
+define forward
+{ fd }
+
+define bk
+{ neg fd }
+
+define back
+{ bk }
+
+define turn_right
+{ unit "Rotate" render }
+
+define tr
+{ turn_right }
+
+define turn_left
+{ neg tr }
+
+define tl
+{ turn_left }
+
+define set_pen_up
+{ unit "SetPenUp" render }
+
+define pu
+{ true set_pen_up }
+
+define pd
+{ false set_pen_up }
+
+define set_pen_width
+{ unit "SetPenWidth" render }
+
+define pw
+{ set_pen_width }
+
+define set_turtle_visibility
+{ unit "SetTurtleVisibility" render }
+
+define show_turtle
+{ true set_turtle_visibility }
+
+define st
+{ show_turtle }
+
+define hide_turtle
+{ false set_turtle_visibility }
+
+define ht
+{ hide_turtle }
+
+define draw_reg_line_seq(len n angle)
+{{
+  desc:
+    Draws a sequence of "n" lines with length "len" and an angle of "angle".
+}}
+{ [len fd angle tr] n repeat }
+
+define draw_reg_poly(len n)
+{{
+  desc:
+    Draws a regular polygon with each side of length "side" and with "n" sides
+}}
+{ len n 360 n / draw_reg_line_seq }
+
+define draw_triangle(len)
+{ len 3 draw_reg_poly }
+
+define draw_square(len)
+{ len 4 draw_reg_poly }
+
+define sq
+{ draw_square }
+
+define draw_pentagon(len)
+{ len 5 draw_reg_poly }
+
+define draw_hexagon(len)
+{ len 6 draw_reg_poly }
+
+define draw_septagon(len)
+{ len 7 draw_reg_poly }
+
+define draw_octagon(len)
+{ len 8 draw_reg_poly }
+
+define draw_nonagon(len)
+{ len 9 draw_reg_poly }
+
+define draw_decagon(len)
+{ len 10 draw_reg_poly }
+
+define draw_hendecagon(len)
+{ len 11 draw_reg_poly }
+
+define draw_dodecagon(len)
+{ len 12 draw_reg_poly }
+
+define draw_polygram(rad n k)
+{{
+  desc:
+    Draws a regular star polygon
+}}
+{ \i.[rad i k + point_on_circle] n for }
+
+define draw_pentagram(len)
+{ len 5 draw_polygram }
+
+define draw_hexagram(len)
+{ len 6 draw_polygram }
+
+define rgb
+{ triple "Rgb" render }
+
+define red
+{ 0xFF 0x00 0x00 rgb }
+
+define green
+{ 0x00 0xFF 0x00 rgb }
+
+define blue
+{ 0x00 0x00 0xFF rgb }
+

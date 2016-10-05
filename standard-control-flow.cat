@@ -1,0 +1,125 @@
+// Dedicated to the public domain by Christopher Diggins
+// This file is free to be used, modified or redistributed for any purpose,
+// without restriction, obligation, or warantee.
+// http://www.cdiggins.com
+
+//==============================================================================
+// Looping constructions
+
+define repeat : ('A ('A -> 'A) int -> 'A)
+{{
+  desc:
+    Executes a loop a fixed number of times
+  semantics:
+    $A [$B] $c repeat == $A $c eqz [] [$B $c dec] if
+  test:
+    in: 3 [inc] 3 repeat
+    out: 6
+  test:
+    in: 3 [2 mul_int] 2 repeat
+    out: 12
+  test:
+    in: 3 [inc] 0 repeat
+    out: 3
+  tags:
+    level1,control
+}}
+{
+  swap
+  [dip dec] papply
+  [dup neqz] while pop
+}
+
+define whilen : ('A ('A -> 'A) ('A -> 'A bool) -> 'A)
+{{
+  desc:
+    Executes a while loop, while a condition is not true
+  semantics:
+    $A [$B] [$C] whilen == $A $C not [$B [$B][$C] whilen] [] if
+  test:
+    in: 42 [dec] [dup eqz] whilen
+    out: 0
+  tags:
+    level2,control
+}}
+{
+  negate while
+}
+
+define whilene : ('A list ('A list -> 'A list) -> 'A)
+{{
+  desc:
+    Executes a function while the list on the top of the stack is not empty
+  semantics:
+    $A $b [$C] whilene == $A $b empty not [$C [$C] whilene] [pop] if
+  test:
+    in: 0 [1 2 3 4] list [uncons swap [add_int] dip] whilene
+    out: 10
+  tags:
+    level2,control
+}}
+{
+  [empty] whilen pop
+}
+
+define whilenz : ('A int ('A int -> 'A int) -> 'A)
+{{
+  desc:
+    Executes a function while the value on the top of the stack is not equal to zero.
+  semantics:
+    $A $b [$C] whilenz == $A $b neqz [$C [$C] whilenz] [pop] if
+  test:
+    in: 1 4 [[2 mul_int] dip dec] whilenz
+    out: 16
+  tags:
+    level2,control
+}}
+{
+  [dup neqz] while pop
+}
+
+define foreach : ('A list ('A any -> 'A) -> 'A)
+{{
+  desc:
+    Executes a function with each item in the list, and consumes the list.
+  semantics:
+    $A $b [$C] foreach == $A $b empty not [uncons pop [$C] foreach] [pop] if }
+  test:
+    in: 0 [1 2 3 4] list [add_int] foreach
+    out: 10
+  tags:
+    level2,control
+}}
+{
+  [dip] papply [uncons swap] rcompose whilene
+}
+
+define for : ('A ('A int -> 'A) int -> 'A)
+{{
+  desc:
+    A for loop. Behaves like repeat but an index value is
+    passed to the loop body on each iteration, starting at 0.
+  test:
+    in: 0 [add_int] 5 for
+    out: 10
+  tags:
+    level2,control
+}}
+{
+  0 bury
+  swap [dupd swap [apply] dip inc] papply swap
+  [dupd neq] papply while pop
+}
+
+define print_list : ('A list ~> 'A list)
+{{
+  desc:
+    Outputs a list to the console window
+  bugs:
+    The type checker requires variable 'A to be written explicitly
+  tags:
+    level2,io
+}}
+{
+  dup [writeln] foreach
+}

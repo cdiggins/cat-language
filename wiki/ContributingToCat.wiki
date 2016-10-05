@@ -1,0 +1,50 @@
+#summary Contributing to the Cat project.
+#labels Featured
+
+= Contributing to Cat =
+
+There are many different ways you can contribute to the Cat project, but in general the preferred method would be to fork the current project and make modifications independently.  
+
+Many uses of Cat are for specific problem domains which benefit greatly from the addition of new language features. The core Cat language however needs to stay very minimal and relatively general purpose, so it would often be more fruitful to simply start a new version of Cat than petition me for new features. The other issue is that as the developer of this Cat implementation I don't have the time to dedicate to managing a large community of developers in addition to working on the langauge design and specification. 
+
+If you are interested still in contributing to the core language, and don't mind working within the beneovelent dictatorship model, please express your interest on the [http://groups.google.com/group/catlanguage Cat language mailing list].
+
+== For Inexperienced Programmers ==
+
+If you are a relatively inexperienced programmer and are looking for an opportunity to gain experience for your C.V. by contributing to open-source software development then I am very interested in helping out. However, there is a certain amount of initial effort required to get started, which have to be pursued with a certain amount of autonomy:
+
+  * introduce yourself on the [http://groups.google.com/group/catlanguage mailing list]. If you have questions or need help, please ask the mailing list rather than emailing me directly.  
+  * subscribe to the RSS feed on my blog at http://www.cdiggins.com (or check it regularly)
+  * download and install visual C# express or Mono 1.13+ 
+  * read some very basic C# tutorials to learn the basics of the langauge and how to compile projects  
+  * play around a bit: try downloading and modifying some projects from CodeProject.com
+  * read up on Cat (keep in mind the docs are not always up to date)
+  * download and install Cat
+  * play around with Cat, writing a few small programs 
+  * report any issues/suggestions you have using the [http://code.google.com/p/cat-language/issues/list issue reporting form] 
+  * compile the Cat source code
+  * see if you can modify the welcome message
+  * read up on the version control systems, specifically subversion
+  * download a subversion client 
+  * get the latest version of the Cat code from the subversion repository 
+  * try compiling and using the code
+  * let me know once you managed to do all of this
+
+After all this I'll be able to assign you some specific tasks that suit your abilities and interests, which will benefit the Cat project. At this point you can start writing code, either in C# or Cat. Or you can write extra utiltities which will be of interest 
+
+There is quite a lot of work involved in performing these steps, especially for someone starting out. Your best friend at the beginning will be Google and Wikipedia. I may be able to help a bit on the mailing list, but this is a bit of a gauntlet of fire. Getting through these tasks on your own, is an important step in gaining sufficient autonomy to be able to make a net positive contribution. In other words, I want to be assured that I don't want to spend more time teaching people for free, without getting any overall benefit to Cat. 
+
+I can't say for sure how long it would to complete the step, but it wouldn't be unreasonable to expect at least a fourty hour investement of time if you are very new to all of these concepts. 
+
+== Regular Contributors ==
+
+If you plan on making regular contributions over a period of time, I can schedule regular time slots of 15 to 30 minutes for discussing your future plans and blocking issues. If you are willing to provide status reports on a regular basis, I can provide written evaluations if you are interested in gauging your progress in a semi-formal manner.
+
+== Signficant Contributors ==   
+
+If you get to the point where you are able to make a signficant contribution to the Cat project I can offer you a mention on the [Acknowledgements acknowledgements] page, and a letter describing your contributions. 
+
+If you make a very signficant contribution, then I will likely be happy to serve as a professional reference. 
+
+Note that it is important to collaborfate to come to a common understanding of what might be considered a signficant contribution. Simply filing a few bugs, doesn't guarantee contributor status.
+

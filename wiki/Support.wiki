@@ -1,0 +1,8 @@
+#summary About getting technical support for development of Cat.
+#labels Featured
+
+= Support for Cat =
+
+If you need help using Cat on a project, we encourage you to use the [http://groups.google.com/group/catlanguage discussion forum]. If you have identified a bug with the Cat interpreter, or want to make a feature request you can also report it using the [http://code.google.com/p/cat-language/issues/list issue reporting form].
+
+If you are planning on using Cat for a large commercial project, and need extended support [ChristopherDiggins Christopher Diggins], the designer of Cat, is available for consulting. 

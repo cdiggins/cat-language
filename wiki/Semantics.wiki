@@ -1,0 +1,12 @@
+#summary A brief description of the core semantics of Cat.
+
+= Cat Semantics =
+
+A Cat program can be constructed through either juxtaposition or quotation of programs. 
+
+Juxtaposition (which is often called concatenation) means simply to place two programs side by side. Juxtaposition represent the mathematical composition of functions. This is in contrast to languages such as ML or Haskell where Juxtaposition means function application. 
+
+Quotation is the abstraction operation, and is represented using square braces ("[" and "]"). Quotation has the result of pushing an anonymous function (a
+point-free lambda expression if you want to be technical) onto the stack. 
+
+The rest of Cat is defined in terms of the definitions of primitive and library-defined functions. 

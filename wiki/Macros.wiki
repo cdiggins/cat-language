@@ -1,0 +1,36 @@
+#summary Using macros.
+#labels Usage
+
+= Macros =
+
+Macros are an extension to the core Cat language, called MetaCat. The Cat interpreter will parse and load macros, but will not apply them unless instructed to using the '#m' or `#o` meta-command.
+
+The standard library macros can be found at 
+
+== For more information ==
+
+For more information on MetaCat macros see http://www.cat-language.com/metacat.html.
+
+== Examples ==
+
+Some example of Meta-cat macros:
+
+{{{
+macro { swap swap } => { }
+macro { dup pop } => { }
+macro { quote apply } => { }
+macro { $b $a swap } => { $a $b }
+macro { $a pop } => { }
+macro { [$A] apply } => { $A }
+macro { $a quote } => { [$a] }
+macro { $b [$A] dip } => { $A $b }
+macro { true [$B] [$A] if } => { $B }
+macro { false [$B] [$A] if } => { $A }
+macro { [$B] [$A] compose } => { [$B $A] }
+macro { map $a map } => { $a compose map }
+macro { unit $a filter } => { $a apply [unit] [pop nil] if }
+macro { unit $a map } => { $a apply unit }
+macro { unit $b $a fold } => { $a apply }
+}}}
+
+The standard library macros are defined at: http://cat-language.googlecode.com/svn/trunk/macros.cat

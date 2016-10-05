@@ -1,0 +1,58 @@
+// Dedicated to the public domain by Christopher Diggins
+// This file is free to be used, modified or redistributed for any purpose,
+// without restriction, obligation or warantee.
+// http://www.cdiggins.com
+
+define pattern0
+{ [100 sq 15 tr] 24 repeat }
+
+define pattern1
+{ [100 sq 15 tr 10 fd] 24 repeat }
+
+define fractal0
+{
+  dup sq 15 tr           // draw a square
+  pu dup fd pd           // move forward
+  dup 5 <                // how small are we drawing?
+    [pop]                // base-case
+    [3 4 frac fractal0]  // recursive call (draw fractal again, but smaller)
+  if
+}
+
+define fractal1
+{
+  dup sq
+  dup 3 <
+    [pop]
+    [
+      dup fd
+      dup 4 5 frac
+      45 tl fractal1
+      45 tr
+      bk
+    ]
+  if
+}
+
+define demo1
+{{
+  desc:
+    Draws a simple fractal
+}}
+{
+  90 tl 80 fractal1
+}
+
+define demo2
+{{
+  desc:
+    Draws the demo1 fractal and its mirror image
+}}
+{
+  [90 tl demo1] 2 repeat
+}
+
+define demo
+{
+  demo2
+}

@@ -1,0 +1,19 @@
+#summary A collection of thoughts and ideas.
+#labels Ideas
+
+  * I would like a better way to reuse objects. In the HashList implementation I link shared objects together to reduce copies. I may need to implement IDisposable, and start calling Dispose whenever I destroy an object
+  * Cat syntax prettifier plugin for the browser
+  * Cat editor
+  * Cat to JavaScript compiler
+  * automated doc generator. 
+  * Cat parsing library
+  * MapReduce implementation
+  * automatic updates (maybe?)
+  * Cat to MSIL compiler
+  * Performance based tests
+  * online Cat code browser 
+  * import command should work on URLs 
+  * Cat to Python compiler
+  * Cat to Scheme
+  * Scheme to Cat 
+  * Command-line options ... and script.

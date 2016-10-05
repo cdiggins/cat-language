@@ -1,0 +1,22 @@
+// Dedicated to the public domain by Christopher Diggins
+// This file is free to be used, modified or redistributed for any purpose,
+// without restriction, obligation or warantee.
+// http://www.cdiggins.com
+
+"metacat-macros.cat" #load
+"interpreter-cmds.cat" #load
+"standard-core.cat" #load
+"standard-shuffle.cat" #load
+"standard-combinators.cat" #load
+"standard-control-flow.cat" #load
+"standard-lists.cat" #load
+"standard-math.cat" #load
+"standard-predicates.cat" #load
+"standard-hash.cat" #load
+"standard-vectors.cat" #load
+"standard-geometry.cat" #load
+"clr-graphics.cat" #load
+"clr-regex.cat" #load
+"demo-examples.cat" #load
+"demo-graphics.cat" #load
+"demo-fixpoint.cat" #load

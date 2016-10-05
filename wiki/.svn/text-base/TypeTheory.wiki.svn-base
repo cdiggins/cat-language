@@ -1,0 +1,14 @@
+#summary A brief introduction to and motivation for type theory.
+#labels Glossary
+
+= Introduction =
+
+Type theory was created by Bertrand Russell as a response to his discovery of [RussellsParadox Russell's Paradox].
+
+The need for type theory can also be understood through the observation that a set of numbers is not the same kind of mathematical entity as an individual number. For example you can find the intersection or union of a set of numbers, but those operations are ill-defined on numbers themselves. Therefore we can say numbers and sets of numbers are incompatible. This notion of compatibility can be formalized classifying numbers and sets in different categories called types. 
+
+Now consider a set of numbers (call it N1), and a set of sets of numbers (call it N2). If I am to extract an item from the set N2 it would be a set of numbers and if I were to extract an item from the set N1 it would be a number. These operations don't yield compatible results. The fact that the operations don't yield compatible results implies that the sets N1 and N2 themselves are separate types, even though they are both sets.
+
+Types can also be used for distinguishing between different kinds of operations such as unary function on numbers, binary functions on numbers, n-ary functions on sets, etc.
+
+The next logical question is: what is the diference between the general notion of a set and a set of specific items? The generalized notion of a set can be equated with a function on types. In other words given a type (e.g. numbers) it creates a new type (e.g. sets of numbers). Because an operation on types is not a type itself this motivates us to use a [KindSystem kind system] to differentiate types from type operations. 
