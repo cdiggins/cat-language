@@ -135,16 +135,16 @@ export module CatLanguage
             case "false":
                 return new CatConstant(false);
             case "quotation":
-                return new CatQuotation(ast.children.map((c) => astToInstruction(c, env)))
+                return new CatAbstraction(ast.children.map((c) => astToInstruction(c, env)))
             default: 
                 throw new Error("Unrecognized term: " + ast.name);
         }
     }
 
     // Converts a string into a Cat instruction 
-    export function stringToInstruction(s:string, env:CatEnvironment) : CatInstruction {
-        var ast = m.parse(m.grammars['cat'].terms, s);
-        return new CatQuotation(ast.children.map((c) => astToInstruction(c, env)));
+    export function stringToInstruction(name:string, code:string, env:CatEnvironment) : CatInstruction {
+        var ast = m.parse(m.grammars['cat'].terms, code);
+        return new CatDefinition(name, ast.children.map((c) => astToInstruction(c, env)));
     }
 
     // Returns the type of data
@@ -204,7 +204,7 @@ export module CatLanguage
     }
 
     // Gets the type of a sequence of instructions 
-    export function quotationType(q:CatInstruction[]) : ti.TypeArray {
+    export function instructionSequenceType(q:CatInstruction[]) : ti.TypeArray {
         return ti.composeFunctionChain(q.map(i => i.type));
     }
     
@@ -247,18 +247,35 @@ export module CatLanguage
     }
 
     // A list of instructions 
-    export class CatQuotation extends CatInstruction {
+    export class CatDefinition extends CatInstruction {
         constructor(
+            public name:string,
             public instructions:CatInstruction[])
         { 
-            super("_quotation_", 
+            super(name, 
                 (stack) => instructions.forEach(i => i.func(stack)),
-                quotationType(instructions)
+                instructionSequenceType(instructions)
             ); 
         }
 
         toString() : string {
             return this.instructions.map(i => i.toString()).join(" ");
+        }
+    };
+
+    // A list of instructions 
+    export class CatAbstraction extends CatInstruction {
+        constructor(
+            public instructions:CatInstruction[])
+        { 
+            super("_quotation_", 
+                (stack) => instructions.forEach(i => i.func(stack)),
+                ti.quotation(instructionSequenceType(instructions))
+            ); 
+        }
+
+        toString() : string {
+            return '[' + this.instructions.map(i => i.toString()).join(" ") + ']';
         }
     };
 
@@ -368,7 +385,7 @@ export module CatLanguage
         compose() {
             var a = this.popType<CatInstruction>();
             var b = this.popType<CatInstruction>();
-            this.push(new CatQuotation([b, a]));
+            this.push(new CatAbstraction([b, a]));
         }
 
         // Calls a plain JavaScript function using arguments from the stack
@@ -428,16 +445,18 @@ export module CatLanguage
         // http://www.kevinalbrecht.com/code/joy-mirror/j03atm.html
         stdOps = {
             // TODO: replace dip with this one 
-            //"dipX"      : ["swap quote compose apply", "(('S -> 'R) 'a 'S -> 'a 'R)"],
+            "qdup"      : ["[dup]", "('S -> ('a 'R -> 'a 'a 'R) 'S)"],
+            "dipX"      : ["swap quote compose apply", "(('S -> 'R) 'a 'S -> 'a 'R)"],
             "rcompose"  : ["swap compose", "(('A -> 'B) ('B -> 'C) 'S -> ('A -> 'C) 'S)"],
             "papply"    : ["quote rcompose", "('a ('a 'S -> 'R) 'T -> ('S -> 'R) 'T)"],
-            "dipd"      : ["quote [dip] rcompose", "(('S -> 'R) 'a 'b 'S -> 'a 'b 'R)"],
-            "popd"      : ["dip [pop]", "('a 'b 'S -> 'a 'S)"],
+            "dipd"      : ["swap [dip] dip", "(('S -> 'R) 'a 'b 'S -> 'a 'b 'R)"],
+            "popd"      : ["[pop] dip", "('a 'b 'S -> 'a 'S)"],
             "popop"     : ["pop pop", "('a 'b 'S -> 'S)"],
-            "dupd"      : ["dip [dup]", "('a 'b 'S -> 'a 'b 'b 'S)"],                
-            "swapd"     : ["dip [swap]", "('a 'b 'c 'S -> 'a 'c 'b 'S)"],                
+            "dupd"      : ["[dup] dip", "('a 'b 'S -> 'a 'b 'b 'S)"],                
+            "swapd"     : ["[swap] dip", "('a 'b 'c 'S -> 'a 'c 'b 'S)"],                
             "rollup"    : ["quote dip", "('a 'b 'c 'S -> 'b 'c 'a 'S)"],                
-            "rolldown"  : ["pop pop", "('a 'b 'c 'S -> 'a 'c 'b 'S)"],                
+            "rolldown"  : ["pop pop", "('a 'b 'c 'S -> 'a 'c 'b 'S)"],    
+            "if"        : ["cond apply", "(Bool ('A -> 'B) ('A -> 'B) 'A ->+"]            
         }
         
         // Helper function to get the function associated with an instruction
@@ -497,15 +516,18 @@ export module CatLanguage
 
         // Creates a new instruction from a definition
         addDefinition(name:string, code:string, type:string = null) : CatInstruction {
-            var i = stringToInstruction(code, this);
+            var i = stringToInstruction(name, code, this);
             var inferredType = i.type;
             if (type)
             {
                 var expectedType = stringToType(type);
-                if (!ti.areTypesSame(inferredType, expectedType))
-                    throw new Error("Inferred type: " + i.type + " does not match expected type: " + type);
+                if (!ti.areTypesSame(inferredType, expectedType)) {
+                    var a = ti.normalizeVarNames(inferredType).toString();
+                    var b = ti.normalizeVarNames(expectedType).toString();                    
+                    throw new Error("Inferred type: " + a + " does not match expected type: " + b);
+                }
             }
-            return this.instructions[name];
+            return this.instructions[name] = i;
         }
 
         // Constructor 

@@ -1,0 +1,23 @@
+{
+	"version": "0.1.0",
+	
+	// The command is tsc.
+	"command": "tsc",
+
+	// Show the output window only if unrecognized errors occur. 
+	"showOutput": "always",
+	
+	// Under windows use tsc.exe. This ensures we don't need a shell.
+	"windows": {
+		"command": "tsc"
+	},
+	
+	// args is the program to compile.
+	"args": [],
+	
+	"isShellCommand": true,
+	
+	// use the standard tsc problem matcher to find compile problems
+	// in the output.
+	"problemMatcher": "$tsc"
+}

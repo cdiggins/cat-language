@@ -1,0 +1,23 @@
+{
+  "name": "myna-markdown-to-html",
+  "version": "1.0.0",
+  "description": "A Node.JS JavaScript module for converting git-flavored Markdown to HTML.",
+  "main": "../../tools/myna.js",
+  "scripts": {
+    "test": "../../tests/test_markdown_to_html.js"
+  },
+  "homepage": "https://github.com/cdiggins/myna-parser",
+  "bugs": "https://github.com/cdiggins/myna-parser/issues",
+  "license": "MIT",
+  "author": {
+    "name": "Christopher Diggins",
+    "email": "cdiggins@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cdiggins/myna-parser.git"
+  },
+  "dependencies": {
+    "myna-parser" : "^2.2.4"
+  }
+}

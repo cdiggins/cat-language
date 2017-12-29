@@ -1,0 +1,398 @@
+// These are the primitivaAFasdqwerte functions for Heron and their types
+
+/*
+    Key: 
+        float[N] = vec2 | vec3 | vec4
+        mat = mat2 | mat3 | mat4
+        int[N] = ivec2 | ivec3 | ivec4
+        bool[N] = bvec2 | bvec3 | bvec4        
+        T = float | float[N] 
+        Scalar = float | int | bool
+        Any = float[N] | mat | imat | int[N] | bool[N] | scalar;
+*/
+
+// https://www.shadertoy.com/howto
+
+iResolution : ivec3;
+iSampleRate : float;
+iGlobalTime : float;
+iTime : float;
+iTimeDelta : float;
+iFrame : float;
+iChannelTime : vec4; 
+iMouse : vec2;
+iDate : vec4;
+iSampleRate : float;
+iChannelResolution : vec3[4];
+iChannel0 : sampler2D; 
+iChannel1 : sampler2D; 
+iChannel2 : sampler2D; 
+iChannel3 : sampler2D; 
+
+// Constructors 
+
+// https://www.khronos.org/opengl/wiki/Data_Type_(GLSL)#Conversion_constructors
+
+float : (int) -> float; 
+float : (bool) -> float;
+int : (float) -> int; 
+int : (bool) -> int; 
+bool : (int) -> bool;
+bool : (float) -> bool;
+
+vec2 : (float) -> vec2;
+vec3 : (float) -> vec3;
+vec4 : (float) -> vec4;
+ivec2 : (int) -> ivec2;
+ivec3 : (int) -> ivec3;
+ivec4 : (int) -> ivec4;
+bvec2 : (bool) -> bvec2;
+bvec3 : (bool) -> bvec3;
+bvec4 : (bool) -> bvec4;
+
+vec2 : (float, float) -> vec2;
+vec3 : (float, float, float) -> vec3;
+vec4 : (float, float, float, float) -> vec4;
+mat2 : (vec2, vec2) -> mat2;
+mat3 : (vec3, vec3, vec3) -> mat2;
+mat4 : (vec4, vec4, vec4) -> mat4;
+ivec2 : (int, int) -> ivec2;
+ivec3 : (int, int, int) -> ivec3;
+ivec4 : (int, int, int, int) -> ivec4;
+bvec2 : (bool, bool) -> bvec2;
+bvec3 : (bool, bool, bool) -> bvec3;
+bvec4 : (bool, bool, bool, bool) -> bvec4;
+
+// Operators 
+
++ : (Any, Any) -> Any;
+- : (Any, Any) -> Any;
+* : (Any, Any) -> Any;
+/ : (Any, Any) -> Any;
+< : (Any, Any) -> bool;
+> : (Any, Any) -> bool;
+<= : (Any, Any) -> bool;
+>= : (Any, Any) -> bool;
+== : (Any, Any) -> bool;
+
+++ : (int) -> int;
+-- : (int) -> int;
+&& : (bool, bool) -> bool;
+|| : (bool, bool) -> bool;
+^^ : (bool, bool) -> bool;
+! : (bool) -> bool;
+? : (bool, Any, Any) -> Any;
+
+//  Matrix Functions (8.5 p55)
+
+matrixCompMult : ( mat, mat ) -> mat;
+
+//  Vector Relational Functions (8.6 p55)
+
+// Scalar 
+
+all : ( bool[N] ) -> bool;
+any : ( bool[N] ) -> bool;
+
+// Vectors 
+
+equal : ( float[N], float[N] ) -> bool[N];
+equal : ( int[N], int[N] ) -> bool[N];
+equal : ( bool[N], bool[N] ) -> bool[N];
+greaterThan : ( float[N], float[N] ) -> bool[N];
+greaterThan : ( int[N], int[N] ) -> bool[N];
+greaterThanEqual : ( float[N], float[N] ) -> bool[N];
+greaterThanEqual : ( int[N], int[N] ) -> bool[N];
+lessThan : ( float[N], float[N] ) -> bool[N];
+lessThan : ( int[N], int[N] ) -> bool[N];
+lessThanEqual : ( float[N], float[N] ) -> bool[N];
+lessThanEqual : ( int[N], int[N] ) -> bool[N];
+not : ( bool[N] ) -> bool[N];
+notEqual : ( float[N], float[N] ) -> bool[N];
+notEqual : ( int[N], int[N] ) -> bool[N];
+notEqual : ( bool[N], bool[N] ) -> bool[N];
+
+// = Geometric Functions (8.4 p54)
+
+ftransform : () -> vec4; // ??
+cross : ( vec3, vec3 ) -> vec3;
+distance : ( T, T ) -> float;
+    
+dot : ( T, T ) -> float;
+faceforward : ( T, T, T ) -> T;
+length : ( T ) -> float;
+normalize : ( T ) -> T;
+reflect : ( T, T ) -> T;
+refract : ( T, T, float ) -> T;
+
+// = Angle and Trigonometry Functions  : (8.1 p51)
+
+sin : ( T ) -> T;
+cos : ( T ) -> T;
+tan : ( T ) -> T;
+asin : ( T ) -> T;
+acos : ( T ) -> T;
+atan : ( T, T ) -> T;
+atan : ( T ) -> T;
+radians : ( T ) -> T;
+degrees : ( T ) -> T;
+
+// = Common Functions  : (8.3 p52)
+
+abs : ( T ) -> T;
+ceil : ( T ) -> T;
+clamp : ( T, T, T ) -> T;
+clamp : ( T, float, float ) -> T;
+floor : ( T ) -> T;
+fract : ( T ) -> T;
+max : ( T, T ) -> T;
+max : ( T, float ) -> T;
+min : ( T, T ) -> T;
+min : ( T, float ) -> T;
+mix : ( T, T, T ) -> T;
+mix : ( T, T, float ) -> T;
+mod : ( T, T ) -> T;
+mod : ( T, float ) -> T;
+sign : ( T ) -> T;
+smoothstep : ( T, T, T ) -> T;
+smoothstep : ( float, float, T ) -> T;
+step : ( T, T ) -> T;
+step : ( float, T ) -> T;
+
+// = Exponential Functions  : (8.2 p52)
+
+pow : ( T, T ) -> T;
+exp : ( T ) -> T;
+log : ( T ) -> T;
+exp2 : ( T ) -> T;
+log2 : ( T ) -> T;
+sqrt : ( T ) -> T;
+inversesqrt : ( T ) -> T;
+
+// = Fragment Processing Functions  : (8.8 p58) Fragment ONLY
+
+dFdx : ( T ) -> T;
+dFdy : ( T ) -> T;
+fwidth : ( T ) -> T;
+
+// = Texture Lookup Functions  : (8.7 p56)
+
+texture : ( sampler2D, vec2 ) -> vec4;
+texture1D : ( sampler1D, float, float ) -> vec4;
+texture1DProj : ( sampler1D, vec2 ) -> vec4;
+texture1DProj : ( sampler1D, vec4 ) -> vec4;
+texture2D : ( sampler2D, vec2 ) -> vec4;
+texture2DProj : ( sampler2D, vec3 ) -> vec4;
+texture2DProj : ( sampler2D, vec4 ) -> vec4;
+texture3D : ( sampler3D, vec3 ) -> vec4;
+texture3DProj : ( sampler3D, vec4 ) -> vec4;
+textureCube : ( samplerCube, vec3 ) -> vec4;
+shadow1D : ( sampler1DShadow, vec3 ) -> vec4;
+shadow2D : ( sampler2DShadow, vec3 ) -> vec4;
+shadow1DProj : ( sampler1DShadow, vec4 ) -> vec4;
+shadow2DProj : ( sampler2DShadow, vec4 ) -> vec4;
+
+// With bias term is Fragment ONLY
+
+texture : ( sampler2D, vec2, float ) -> vec4;
+texture1D : ( sampler1D, float, float ) -> vec4;
+texture1DProj : ( sampler1D, vec2, float ) -> vec4;
+texture1DProj : ( sampler1D, vec4, float ) -> vec4;
+texture2D : ( sampler2D, vec2, float ) -> vec4;
+texture2DProj : ( sampler2D, vec3, float ) -> vec4;
+texture2DProj : ( sampler2D, vec4, float ) -> vec4;
+texture3D : ( sampler3D, vec3, float ) -> vec4;
+texture3DProj : ( sampler3D, vec4, float ) -> vec4;
+textureCube : ( samplerCube, vec3, float ) -> vec4;
+shadow1D : ( sampler1DShadow, vec3, float ) -> vec4;
+shadow2D : ( sampler2DShadow, vec3, float ) -> vec4;
+shadow1DProj : ( sampler1DShadow, vec4, float ) -> vec4;
+shadow2DProj : ( sampler2DShadow, vec4, float ) -> vec4;
+
+// = Texture Lookup Functions with LOD  : (8.7 p56)
+
+// Vertex ONLY; ensure GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS > 0
+
+textureLod : ( sampler2D, vec2, float ) -> vec4;
+texture1DLod : ( sampler1D, float, float ) -> vec4;
+texture1DProjLod : ( sampler1D, vec2, float ) -> vec4;
+texture1DProjLod : ( sampler1D, vec4, float ) -> vec4;
+texture2DLod : ( sampler2D, vec2, float ) -> vec4;
+texture2DProjLod : ( sampler2D, vec3, float ) -> vec4;
+texture2DProjLod : ( sampler2D, vec4, float ) -> vec4;
+texture3DProjLod : ( sampler3D, vec4, float ) -> vec4;
+textureCubeLod : ( samplerCube, vec3, float ) -> vec4;
+shadow1DLod : ( sampler1DShadow, vec3, float ) -> vec4;
+shadow2DLod : ( sampler2DShadow, vec3, float ) -> vec4;
+shadow1DProjLod : ( sampler1DShadow, vec4, float ) -> vec4;
+shadow2DProjLod : ( sampler2DShadow, vec4, float ) -> vec4;
+
+// = Noise Functions  : (8.9 p60)
+
+noise1 : ( T ) -> float;
+noise2 : ( T ) -> vec2;
+noise3 : ( T ) -> vec3;
+noise4 : ( T ) -> vec4;
+
+// BUILT-IN UNIFORMs (7.5 p45) access=RO
+gl_ModelViewMatrix : mat4;
+gl_ModelViewProjectionMatrix : mat4;
+gl_ProjectionMatrix : mat4;
+gl_TextureMatrix : mat4[gl_MaxTextureCoords];
+gl_ModelViewMatrixInverse : mat4;
+gl_ModelViewProjectionMatrixInverse : mat4;
+gl_ProjectionMatrixInverse : mat4;
+gl_TextureMatrixInverse : mat4[gl_MaxTextureCoords];
+gl_ModelViewMatrixTranspose : mat4;
+gl_ModelViewProjectionMatrixTranspose : mat4;
+gl_ProjectionMatrixTranspose : mat4;
+gl_TextureMatrixTranspose: mat4[gl_MaxTextureCoords];
+gl_ModelViewMatrixInverseTranspose : mat4;
+gl_ModelViewProjectionMatrixInverseTranspose : mat4;
+gl_ProjectionMatrixInverseTranspose : mat4;
+gl_TextureMatrixInverseTranspose : mat4[gl_MaxTextureCoords];
+gl_NormalMatrix : mat3;
+gl_NormalScale : float;
+
+/*
+struct gl_DepthRangeParameters {
+ float near;
+ float far;
+ float diff;
+};
+*/
+gl_DepthRange : gl_DepthRangeParameters;
+
+/*
+struct gl_FogParameters {
+ vec4 color;
+ float density;
+ float start;
+ float end;
+ float scale;
+};
+*/
+
+gl_Fog : gl_FogParameters;
+
+/*
+struct gl_LightSourceParameters {
+ vec4 ambient;
+ vec4 diffuse;
+ vec4 specular;
+ vec4 position;
+ vec4 halfVector;
+ vec3 spotDirection;
+ float spotExponent;
+ float spotCutoff;
+ float spotCosCutoff;
+ float constantAttenuation;
+ float linearAttenuation;
+ float quadraticAttenuation;
+};
+*/
+gl_LightSource : gl_LightSourceParameters[gl_MaxLights];
+
+/*
+struct gl_LightModelParameters {
+ vec4 ambient;
+};
+*/
+
+gl_LightModel : gl_LightModelParameters;
+
+/*
+struct gl_LightModelProducts {
+ vec4 sceneColor;
+};
+*/
+
+gl_FrontLightModelProduct : gl_LightModelProducts;
+gl_BackLightModelProduct : gl_LightModelProducts;
+
+/*
+struct gl_LightProducts {
+ vec4 ambient;
+ vec4 diffuse;
+ vec4 specular;
+};
+*/
+
+gl_FrontLightProduct : gl_LightProducts[gl_MaxLights];
+gl_BackLightProduct : gl_LightProducts[gl_MaxLights];
+
+/*
+struct gl_MaterialParameters {
+ vec4 emission;
+ vec4 ambient;
+ vec4 diffuse;
+ vec4 specular;
+ float shininess;
+};
+*/
+
+gl_FrontMaterial : gl_MaterialParameters;
+gl_BackMaterial : gl_MaterialParameters;
+
+/*
+struct gl_PointParameters {
+ float size;
+ float sizeMin;
+ float sizeMax;
+ float fadeThresholdSize;
+ float distanceConstantAttenuation;
+ float distanceLinearAttenuation;
+ float distanceQuadraticAttenuation;
+};
+*/
+
+gl_Point : gl_PointParameters;
+gl_TextureEnvColor : vec4[gl_MaxTextureUnits]; 
+gl_ClipPlane : vec4[gl_MaxClipPlanes];
+gl_EyePlaneS : vec4[gl_MaxTextureCoords];
+gl_EyePlaneT : vec4[gl_MaxTextureCoords];
+gl_EyePlaneR : vec4[gl_MaxTextureCoords];
+gl_EyePlaneQ : vec4[gl_MaxTextureCoords];
+gl_ObjectPlaneS : vec4[gl_MaxTextureCoords];
+gl_ObjectPlaneT : vec4[gl_MaxTextureCoords];
+gl_ObjectPlaneR : vec4[gl_MaxTextureCoords];
+gl_ObjectPlaneQ : vec4[gl_MaxTextureCoords];
+
+// BUILT-IN CONSTANTS (7.4 p44)
+
+gl_MaxVertexUniformComponents : int;
+gl_MaxFragmentUniformComponents : int;
+gl_MaxVertexAttribs : int;
+gl_MaxVaryingFloats : int;
+gl_MaxDrawBuffers : int;
+gl_MaxTextureCoords : int;
+gl_MaxTextureUnits : int;
+gl_MaxTextureImageUnits : int;
+gl_MaxVertexTextureImageUnits : int;
+gl_MaxCombinedTextureImageUnits : int;
+gl_MaxLights : int;
+gl_MaxClipPlanes : int;
+
+// Fragment shader inputs
+
+gl_FragCoord : vec4;
+gl_FrontFacing : bool;
+gl_PointCoord : vec2;
+
+// Fragment shader outputs
+
+gl_FragDepth : float;
+gl_FragColor : vec4;
+
+// https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/textureGrad.xhtml
+
+textureGrad : ( sampler1D, float, float, float ) -> vec4;
+textureGrad : ( sampler2D, vec2, vec2, vec2 ) -> vec4;
+textureGrad : ( sampler3D, vec3, vec3, vec3 ) -> vec4;
+
+// more to do. 
+
+/*
+textureGrad : ( sampler[N], float[N], float[N], float[N] ) -> vec4;
+*/
+

@@ -39,7 +39,7 @@ function testComposition() {
 
 function testComposeInstruction(i1:cat.CatInstruction, i2:cat.CatInstruction) {
     try {
-        var q = new cat.CatQuotation([i1,i2]);
+        var q = new cat.CatAbstraction([i1,i2]);
         var t = ti.composeFunctions(i1.type, i2.type);
         console.log(q + " : " + cat.typeToString(t));
     }
