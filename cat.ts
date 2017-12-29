@@ -7,7 +7,7 @@
 import { Myna as m } from "./node_modules/myna-parser/myna";
 
 // A type-inference library: https://github.com/cdiggins/type-inference
-import { TypeInference as ti } from "./type_inference";
+import { TypeInference as ti } from "./node_modules/type-inference/type_inference";
 
 export module CatLanguage
 {

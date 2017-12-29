@@ -17,7 +17,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // Myna is a parsing library: https://github.com/cdiggins/myna-parser 
 var myna_1 = require("./node_modules/myna-parser/myna");
 // A type-inference library: https://github.com/cdiggins/type-inference
-var type_inference_1 = require("./type_inference");
+var type_inference_1 = require("./node_modules/type-inference/type_inference");
 var CatLanguage;
 (function (CatLanguage) {
     // Defines a Myna grammar for parsing Cat programs and types

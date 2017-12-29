@@ -1,7 +1,7 @@
 // Test module for the Cat language
 
 import { CatLanguage as cat } from "./cat";
-import { TypeInference as ti } from "./type_inference";
+import { TypeInference as ti } from "./node_modules/type-inference/type_inference";
 
 //===============================================================
 // Test functions

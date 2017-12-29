@@ -2,7 +2,7 @@
 // Test module for the Cat language
 Object.defineProperty(exports, "__esModule", { value: true });
 var cat_1 = require("./cat");
-var type_inference_1 = require("./type_inference");
+var type_inference_1 = require("./node_modules/type-inference/type_inference");
 //===============================================================
 // Test functions
 function printEnvironment(ce) {

@@ -1,0 +1,23 @@
+{
+  "name": "cat-language",
+  "version": "2.0.0",
+  "description": "An implementation of the Cat language in TypeScript",
+  "main": "cat.js",
+  "homepage": "https://github.com/cdiggins/cat-language",
+  "license": "MIT",
+  "author": {
+    "name": "Christopher Diggins",
+    "email": "cdiggins@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cdiggins/cat-language.git"
+  },
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "myna-parser": ">=2.4",
+    "type-inference": ">=0.3"
+  }
+}
