@@ -347,14 +347,6 @@ export module CatLanguage
             this.popFunc()(this);
         }
 
-        // Pops a function from the stack, and then a value, then applies the function to the stack pushing the value afterwards 
-        dip() {
-            var f = this.popFunc();
-            var tmp = this.pop();
-            f(this);
-            this.push(tmp);        
-        }
-
         // Pops a boolean and two values from the stack, pushing either the top value back on the stack if the boolean is true,
         // or the other value otherwise. 
         cond() {
@@ -413,7 +405,6 @@ export module CatLanguage
             dup     : "('a 'S -> 'a 'a 'S)",
             pop     : "('a 'S -> 'S)",
             swap    : "('a 'b 'S -> 'b 'a 'S)",
-            dip     : "(('S -> 'R) 'a 'S -> 'a 'R)",
             cond    : "(Bool 'a 'a 'S -> 'a 'S)",
             while   : "(('S -> Bool 'R) ('R -> 'S) 'S -> 'S)",
         };
@@ -444,9 +435,7 @@ export module CatLanguage
         // The type is not required: it is used for validation purposes
         // http://www.kevinalbrecht.com/code/joy-mirror/j03atm.html
         stdOps = {
-            // TODO: replace dip with this one 
-            "qdup"      : ["[dup]", "('S -> ('a 'R -> 'a 'a 'R) 'S)"],
-            "dipX"      : ["swap quote compose apply", "(('S -> 'R) 'a 'S -> 'a 'R)"],
+            "dip"       : ["swap quote compose apply", "(('S -> 'R) 'a 'S -> 'a 'R)"],
             "rcompose"  : ["swap compose", "(('A -> 'B) ('B -> 'C) 'S -> ('A -> 'C) 'S)"],
             "papply"    : ["quote rcompose", "('a ('a 'S -> 'R) 'T -> ('S -> 'R) 'T)"],
             "dipd"      : ["swap [dip] dip", "(('S -> 'R) 'a 'b 'S -> 'a 'b 'R)"],
