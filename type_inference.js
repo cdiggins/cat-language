@@ -20,7 +20,7 @@ var TypeInference;
     // Turn on for debugging purposes
     TypeInference.trace = false;
     // Base class of a type: either a TypeArray, TypeVariable, or TypeConstant
-    var Type = (function () {
+    var Type = /** @class */ (function () {
         function Type() {
             // All type varible referenced somewhere by the type, or the type itself if it is a TypeVariable.
             this.typeVars = [];
@@ -35,7 +35,7 @@ var TypeInference;
     // A list of types is usually encoded as a nested set of type pairs (TypeArrays with two elements).
     // If a TypeArray has Type parameters, quantified unbound type variables, it is considered a "PolyType".
     // Binding type variables is done through the clone function 
-    var TypeArray = (function (_super) {
+    var TypeArray = /** @class */ (function (_super) {
         __extends(TypeArray, _super);
         function TypeArray(types, computeParameters) {
             var _this = _super.call(this) || this;
@@ -166,7 +166,7 @@ var TypeInference;
     // A type variable is used for generics (e.g. T0, TR). 
     // The type variable must belong to a type scheme of a polytype. This is like a "scope" for type variables.
     // Computing the type schema is done in an external function.
-    var TypeVariable = (function (_super) {
+    var TypeVariable = /** @class */ (function (_super) {
         __extends(TypeVariable, _super);
         function TypeVariable(name) {
             var _this = _super.call(this) || this;
@@ -187,7 +187,7 @@ var TypeInference;
     }(Type));
     TypeInference.TypeVariable = TypeVariable;
     // A type constant is a fixed type (e.g. int, function). Also called a MonoType.
-    var TypeConstant = (function (_super) {
+    var TypeConstant = /** @class */ (function (_super) {
         __extends(TypeConstant, _super);
         function TypeConstant(name) {
             var _this = _super.call(this) || this;
@@ -204,7 +204,7 @@ var TypeInference;
     }(Type));
     TypeInference.TypeConstant = TypeConstant;
     // A type unifier is a mapping from a type variable to a best-fit type
-    var TypeUnifier = (function () {
+    var TypeUnifier = /** @class */ (function () {
         function TypeUnifier(name, unifier) {
             this.name = name;
             this.unifier = unifier;
@@ -238,7 +238,7 @@ var TypeInference;
     }
     TypeInference._reassignAllTypeVars = _reassignAllTypeVars;
     // Use this class to unify types that are constrained together.
-    var Unifier = (function () {
+    var Unifier = /** @class */ (function () {
         function Unifier() {
             // Used for generate fresh variable names 
             this.id = 0;
@@ -528,7 +528,7 @@ var TypeInference;
     // This is the top-level implementation of a type inference algorithm that would be used in 
     // a programming language. 
     // Used to track equivalencies between types 
-    var TypeConstraint = (function () {
+    var TypeConstraint = /** @class */ (function () {
         function TypeConstraint(a, b, location) {
             this.a = a;
             this.b = b;
@@ -538,7 +538,7 @@ var TypeInference;
     }());
     // An example implementation of a type environment. Used to implement a type inference algorithm
     // in a typical language with variable tracking and scopes.
-    var TypeEnv = (function () {
+    var TypeEnv = /** @class */ (function () {
         function TypeEnv() {
             this.unifier = new Unifier();
             this.scopes = [{}];

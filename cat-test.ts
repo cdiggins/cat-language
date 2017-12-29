@@ -67,9 +67,8 @@ function testEnvironment() {
 //testEnvironment();
 //testComposition();
 //testCompose("[dup]")
-
-globalEnv.addDefinition("doubleDip", "dup dup", "('a -> 'a 'a 'a 's)");
-globalEnv.addDefinition("test", "[dup] dup");
+//globalEnv.addDefinition("doubleDip", "dup dup", "('a -> 'a 'a 'a 's)");
+//globalEnv.addDefinition("test", "[dup] dup");
 
 declare var process : any;
 process.exit();

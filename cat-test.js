@@ -55,11 +55,5 @@ function testEnvironment() {
     var ce = new cat_1.CatLanguage.CatEnvironment();
     printEnvironment(ce);
 }
-//testEvaluator();
-//testEnvironment();
-//testComposition();
-//testCompose("[dup]")
-globalEnv.addDefinition("doubleDip", "dup dup", "('a -> 'a 'a 'a 's)");
-globalEnv.addDefinition("test", "[dup] dup");
 process.exit();
 //# sourceMappingURL=cat-test.js.map

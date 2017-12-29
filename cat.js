@@ -217,7 +217,7 @@ var CatLanguage;
     }
     CatLanguage.jsFunctionToCat = jsFunctionToCat;
     // A Cat instruction (aka word in Forth)
-    var CatInstruction = (function () {
+    var CatInstruction = /** @class */ (function () {
         function CatInstruction(name, func, type) {
             this.name = name;
             this.func = func;
@@ -232,7 +232,7 @@ var CatLanguage;
     }());
     CatLanguage.CatInstruction = CatInstruction;
     // A list of instructions 
-    var CatDefinition = (function (_super) {
+    var CatDefinition = /** @class */ (function (_super) {
         __extends(CatDefinition, _super);
         function CatDefinition(name, instructions) {
             var _this = _super.call(this, name, function (stack) { return instructions.forEach(function (i) { return i.func(stack); }); }, instructionSequenceType(instructions)) || this;
@@ -248,7 +248,7 @@ var CatLanguage;
     CatLanguage.CatDefinition = CatDefinition;
     ;
     // A list of instructions 
-    var CatAbstraction = (function (_super) {
+    var CatAbstraction = /** @class */ (function (_super) {
         __extends(CatAbstraction, _super);
         function CatAbstraction(instructions) {
             var _this = _super.call(this, "_quotation_", function (stack) { return instructions.forEach(function (i) { return i.func(stack); }); }, type_inference_1.TypeInference.quotation(instructionSequenceType(instructions))) || this;
@@ -263,7 +263,7 @@ var CatLanguage;
     CatLanguage.CatAbstraction = CatAbstraction;
     ;
     // An instruction that pushes data on the stack
-    var CatConstant = (function (_super) {
+    var CatConstant = /** @class */ (function (_super) {
         __extends(CatConstant, _super);
         function CatConstant(data) {
             var _this = _super.call(this, "_constant_", function (stack) { return stack.push(data); }, createCatFunctionType([], [dataType(data)])) || this;
@@ -278,7 +278,7 @@ var CatLanguage;
     CatLanguage.CatConstant = CatConstant;
     ;
     // Wraps the shared stack used by an executing Cat program 
-    var CatStack = (function () {
+    var CatStack = /** @class */ (function () {
         function CatStack() {
             this.stack = [];
         }
@@ -368,7 +368,7 @@ var CatLanguage;
     }());
     CatLanguage.CatStack = CatStack;
     // A cat environment holds the dictionary of instructions and their types. 
-    var CatEnvironment = (function () {
+    var CatEnvironment = /** @class */ (function () {
         // Constructor 
         function CatEnvironment() {
             // The list of defined instruction. 
@@ -421,9 +421,9 @@ var CatLanguage;
                 "popop": ["pop pop", "('a 'b 'S -> 'S)"],
                 "dupd": ["[dup] dip", "('a 'b 'S -> 'a 'b 'b 'S)"],
                 "swapd": ["[swap] dip", "('a 'b 'c 'S -> 'a 'c 'b 'S)"],
-                "rollup": ["quote dip", "('a 'b 'c 'S -> 'b 'c 'a 'S)"],
-                "rolldown": ["pop pop", "('a 'b 'c 'S -> 'a 'c 'b 'S)"],
-                "if": ["cond apply", "(Bool ('A -> 'B) ('A -> 'B) 'A ->+"]
+                "rollup": ["swap swapd", "('a 'b 'c 'S -> 'b 'c 'a 'S)"],
+                "rolldown": ["swapd swap", "('a 'b 'c 'S -> 'c 'a 'b 'S)"],
+                "if": ["cond apply", "(Bool ('A -> 'B) ('A -> 'B) 'A -> 'B)"]
             };
             var _loop_1 = function (k) {
                 this_1.addInstruction(k, function (stack) { return stack[k](); }, this_1.primOps[k]);
@@ -510,7 +510,7 @@ var CatLanguage;
     // It also caches an evaluator function. It contains helper evaluation functions. 
     // The evaluator also maintains the current type of the Cat stack, and predicts it based 
     // on the terms it is about to evaluate.
-    var CatEvaluator = (function () {
+    var CatEvaluator = /** @class */ (function () {
         function CatEvaluator() {
             this.env = new CatEnvironment();
             this.stk = new CatStack();

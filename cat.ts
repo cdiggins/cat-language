@@ -454,9 +454,9 @@ export module CatLanguage
             "popop"     : ["pop pop", "('a 'b 'S -> 'S)"],
             "dupd"      : ["[dup] dip", "('a 'b 'S -> 'a 'b 'b 'S)"],                
             "swapd"     : ["[swap] dip", "('a 'b 'c 'S -> 'a 'c 'b 'S)"],                
-            "rollup"    : ["quote dip", "('a 'b 'c 'S -> 'b 'c 'a 'S)"],                
-            "rolldown"  : ["pop pop", "('a 'b 'c 'S -> 'a 'c 'b 'S)"],    
-            "if"        : ["cond apply", "(Bool ('A -> 'B) ('A -> 'B) 'A ->+"]            
+            "rollup"    : ["swap swapd", "('a 'b 'c 'S -> 'b 'c 'a 'S)"],                
+            "rolldown"  : ["swapd swap", "('a 'b 'c 'S -> 'c 'a 'b 'S)"],    
+            "if"        : ["cond apply", "(Bool ('A -> 'B) ('A -> 'B) 'A -> 'B)"]            
         }
         
         // Helper function to get the function associated with an instruction
