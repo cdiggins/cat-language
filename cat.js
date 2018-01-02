@@ -48,26 +48,41 @@ var CatLanguage;
     };
     // Register the Cat grammar 
     myna_1.Myna.registerGrammar('cat', CatLanguage.catGrammar, CatLanguage.catGrammar.program);
+    // Outputs the AST tree generated from the Cat grammar
+    function astSchemaString() {
+        return myna_1.Myna.astSchemaToString('cat');
+    }
+    CatLanguage.astSchemaString = astSchemaString;
+    // Outputs the Cat grammar as a string 
+    function grammarString() {
+        return myna_1.Myna.grammarToString('cat');
+    }
+    CatLanguage.grammarString = grammarString;
     //====================================================================
     // Helper Functions
     // Converts a cons list into a flat list of types like Cat prefers
     function consListToString(t) {
         if (t instanceof type_inference_1.TypeInference.TypeArray)
-            return typeToString(t.types[0]) + " " + consListToString(t.types[1]);
+            return _typeToString(t.types[0]) + " " + consListToString(t.types[1]);
         else
-            return typeToString(t);
+            return _typeToString(t);
     }
-    CatLanguage.consListToString = consListToString;
     // Converts a string into a type expression
-    function typeToString(t) {
+    function _typeToString(t) {
         if (type_inference_1.TypeInference.isFunctionType(t)) {
             return "("
                 + consListToString(type_inference_1.TypeInference.functionInput(t)) + " -> "
                 + consListToString(type_inference_1.TypeInference.functionOutput(t)) + ")";
         }
+        else if (t instanceof type_inference_1.TypeInference.TypeVariable) {
+            return "'" + t.toString();
+        }
         else {
             return t.toString();
         }
+    }
+    function typeToString(t) {
+        return _typeToString(type_inference_1.TypeInference.normalizeVarNames(t));
     }
     CatLanguage.typeToString = typeToString;
     // Converts a string into a type expression
@@ -158,14 +173,6 @@ var CatLanguage;
         throw new Error("Could not figure out the type of the data: " + data);
     }
     CatLanguage.dataType = dataType;
-    // Creates a Cat function type: adding the implicit row variable 
-    function createCatFunctionType(inputs, outputs) {
-        var row = type_inference_1.TypeInference.typeVariable('_');
-        inputs.push(row);
-        outputs.push(row);
-        return type_inference_1.TypeInference.functionType(type_inference_1.TypeInference.typeConsList(inputs), type_inference_1.TypeInference.typeConsList(outputs));
-    }
-    CatLanguage.createCatFunctionType = createCatFunctionType;
     // Returns true if the type can be a valid input/output of a Cat function type.
     function isValidFunctionPart(t) {
         if (t instanceof type_inference_1.TypeInference.TypeArray) {
@@ -228,6 +235,9 @@ var CatLanguage;
         CatInstruction.prototype.toString = function () {
             return this.name;
         };
+        CatInstruction.prototype.toDebugString = function () {
+            return this.name + "\t: " + typeToString(this.type);
+        };
         return CatInstruction;
     }());
     CatLanguage.CatInstruction = CatInstruction;
@@ -240,8 +250,11 @@ var CatLanguage;
             _this.instructions = instructions;
             return _this;
         }
-        CatDefinition.prototype.toString = function () {
+        CatDefinition.prototype.definitionString = function () {
             return this.instructions.map(function (i) { return i.toString(); }).join(" ");
+        };
+        CatDefinition.prototype.toDebugString = function () {
+            return this.name + "\t: " + typeToString(this.type) + " = { " + this.definitionString() + "}";
         };
         return CatDefinition;
     }(CatInstruction));
@@ -258,6 +271,9 @@ var CatLanguage;
         CatAbstraction.prototype.toString = function () {
             return '[' + this.instructions.map(function (i) { return i.toString(); }).join(" ") + ']';
         };
+        CatAbstraction.prototype.toDebugString = function () {
+            return this.name + "\t: " + typeToString(this.type) + "\t = { " + this.toString() + "}";
+        };
         return CatAbstraction;
     }(CatInstruction));
     CatLanguage.CatAbstraction = CatAbstraction;
@@ -266,12 +282,15 @@ var CatLanguage;
     var CatConstant = /** @class */ (function (_super) {
         __extends(CatConstant, _super);
         function CatConstant(data) {
-            var _this = _super.call(this, "_constant_", function (stack) { return stack.push(data); }, createCatFunctionType([], [dataType(data)])) || this;
+            var _this = _super.call(this, data.toString(), function (stack) { return stack.push(data); }, type_inference_1.TypeInference.rowPolymorphicFunction([], [dataType(data)])) || this;
             _this.data = data;
             return _this;
         }
         CatConstant.prototype.toString = function () {
             return this.data.toString();
+        };
+        CatConstant.prototype.toDebugString = function () {
+            return this.name + "\t: " + typeToString(this.type) + "\t = { " + this.toString() + "}";
         };
         return CatConstant;
     }(CatInstruction));
@@ -431,10 +450,6 @@ var CatLanguage;
                 this.addDefinition(k, this.stdOps[k][0], this.stdOps[k][1]);
         }
         // Helper function to get the function associated with an instruction
-        CatEnvironment.prototype.getFunction = function (s) {
-            return this.getInstruction(s).func;
-        };
-        // Helper function to get the function associated with an instruction
         CatEnvironment.prototype.getInstruction = function (s) {
             if (!(s in this.instructions))
                 throw new Error("Could not find instruction: " + s);
@@ -453,6 +468,7 @@ var CatLanguage;
                 r.push(this.instructions[k]);
             return r;
         };
+        // Returns the type of a quotation given the nodes in the quotation
         CatEnvironment.prototype.getQuotationType = function (astNodes) {
             var types = astNodes.map(function (ast) { return astToType(ast); });
             return type_inference_1.TypeInference.composeFunctionChain(types);
@@ -505,9 +521,10 @@ var CatLanguage;
             this.env = new CatEnvironment();
             this.stk = new CatStack();
             this.type = type_inference_1.TypeInference.typeArray([]);
+            this.trace = true;
         }
         CatEvaluator.prototype.print = function () {
-            console.log(this.stk);
+            console.log("stack = " + this.stk.stack + " : " + typeToString(this.type));
         };
         CatEvaluator.prototype.eval = function (s) {
             this.evalTerm(stringToCatAst(s));
@@ -517,36 +534,23 @@ var CatLanguage;
             ast.children.forEach(function (c) { return _this.evalTerm(c); });
         };
         CatEvaluator.prototype.evalInstruction = function (instruction) {
-            var type = this.env.getType(instruction);
-            var f = this.env.getFunction(instruction);
-            if (!f)
-                throw new Error("Could not find function " + instruction);
-            this.type = type_inference_1.TypeInference.applyFunction(this.type, type);
-            f(this.stk);
-        };
-        CatEvaluator.prototype.push = function (value, type) {
-            this.type.types.unshift(type);
-            this.stk.push(value);
+            if (this.trace)
+                console.log("evaluating " + instruction.toDebugString());
+            // Apply the function type to the stack type
+            this.type = type_inference_1.TypeInference.applyFunction(instruction.type, this.type);
+            // Apply the function to the stack 
+            instruction.func(this.stk);
+            if (this.trace)
+                this.print();
         };
         CatEvaluator.prototype.evalTerm = function (ast) {
-            var _this = this;
             if (!ast)
                 throw new Error("Not a valid AST");
             switch (ast.name) {
                 case "terms":
                     return this.evalTerms(ast);
-                case "identifier":
-                    return this.evalInstruction(ast.allText);
-                case "integer":
-                    return this.push(parseInt(ast.allText), this.env.getTypeFromAst(ast));
-                case "true":
-                    return this.push(true, this.env.getTypeFromAst(ast));
-                case "false":
-                    return this.push(false, this.env.getTypeFromAst(ast));
-                case "quotation":
-                    return this.push(function (stk) { return _this.evalTerms(ast); }, this.env.getTypeFromAst(ast));
                 default:
-                    throw new Error("AST node type is not executable: " + ast.name);
+                    return this.evalInstruction(astToInstruction(ast, this.env));
             }
         };
         return CatEvaluator;

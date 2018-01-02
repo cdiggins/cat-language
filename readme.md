@@ -23,7 +23,8 @@ Quotation is effectively the lambda abstraction operator. Note that composition 
 
 In the concatenative calculus the order of evaluation doesn't matter because function composition is associative. 
 
-Consider the concatenative expression: `A B C D`. This is equivalent to `  which by the law of associativity is equivalent to Compose(Compose(D, C), Compose(B, A)). This is interesting because it implies the evaluation of the concatenative calculus is massively parallelizable. 
+Consider the concatenative expression: `A B C D`. This
+ is equivalent to `  which by the law of associativity is equivalent to Compose(Compose(D, C), Compose(B, A)). This is interesting because it implies the evaluation of the concatenative calculus is massively parallelizable. 
 
 This applies to type inference algorithms and compilers.
 
@@ -34,4 +35,13 @@ This applies to type inference algorithms and compilers.
 * https://en.wikipedia.org/wiki/SKI_combinator_calculus 
 * [The Theory of Concatenative Combinators](http://tunes.org/~iepos/joy.html) 
 * https://github.com/leonidas/codeblog/blob/master/2012/2012-02-17-concatenative-haskell.md
+
+* https://github.com/kputnam/hee - Statically-typed functional and concatenative language
+* https://hackage.haskell.org/package/peg - Peg is a lazy non-deterministic concatenative programming language inspired by Haskell, Joy, and Prolog. 
+* https://gist.github.com/robertkleffner/8e97c74da9bcff38f9b598b60666f92e - Monadic interpreter for a small concatenative calculus
+* http://evincarofautumn.blogspot.ca/2012/02/why-concatenative-programming-matters.html
+* https://www.reddit.com/r/concatenative/
+* http://prl.ccs.neu.edu/blog/2017/03/10/type-inference-in-stack-based-programming-languages/
+* https://github.com/nuprl/hopl-s2017/tree/master/type-inference-for-stack-languages
+* https://www2.ccs.neu.edu/racket/pubs/dissertation-kleffner.pdf - A foundation for typed concatenative languages
 

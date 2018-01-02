@@ -1,6 +1,6 @@
-// A Type Inference Algorithm by Christopher Digginss  
-// A type inference algorithm that provides support for full inference of non-recursive higher rank polymorphic types
-
+// A Type Inference Algorithm that provides support for full inference 
+// of non-recursive higher rank polymorphic types.
+//
 // Copyright 2017 by Christopher Diggins 
 // Licensed under the MIT License
 
@@ -162,7 +162,6 @@ export module TypeInference
         }
 
         clone(newTypes:ITypeLookup) : Type {
-            // TODO: if the type is a polytype we will need to generate fresh type variable names.
             return this.name in newTypes 
                 ? newTypes[this.name] as TypeVariable
                 : newTypes[this.name] = new TypeVariable(this.name);
@@ -219,7 +218,6 @@ export module TypeInference
     // Associate the variable with a new type scheme. Removing it from the previous varScheme 
     export function _reassignVarScheme(v:TypeVariable, t:TypeArray) {
         // Remove the variable from all other type schemes below the given one. 
-        // TODO: horrible complexity, but should work fine. 
         for (var x of descendantTypes(t)) 
             if (x instanceof TypeArray) 
                 x.typeParameterVars = x.typeParameterVars.filter(vd => vd.name != v.name);
@@ -237,7 +235,7 @@ export module TypeInference
         // Used for generate fresh variable names 
         id : number = 0;
 
-        // Given a type variable name find the unifier. Multiple type varialbles will map to the same unifier 
+        // Given a type variable name find the unifier. Multiple type variables will map to the same unifier 
         unifiers : ITypeUnifierLookup = {};
 
         // Unify both types, returning the most specific type possible. 
@@ -385,18 +383,7 @@ export module TypeInference
             if (t instanceof TypeVariable) 
                 this._updateVariableUnifiers(t.name, u);
 
-            return u.unifier;
-            /*
-            var u = this._getOrCreateUnifier(a);          
-            u.unifier = this._chooseBestUnifier(u.unifier, t, depth);
-            this._updateVariableUnifiers(a.name, u);
-            if (t instanceof TypeVariable) {
-                // Make sure a unifier is created
-                var u2 = this._getOrCreateUnifier(t);
-                this._updateVariableUnifiers(t.name, u);
-            }
-            return u.unifier;
-            */
+            return u.unifier;            
         }
 
         // Gets or creates a type unifiers for a type variables
@@ -411,12 +398,27 @@ export module TypeInference
     //======================================================================================
     // Helper functions 
 
-    // Creates a type list as nested pairs ("cons" cells ala lisp)
-    export function typeConsList(types:Type[]) : TypeArray {        
-        if (types.length < 3)
-            return typeArray(types);
+    // Creates a type list as nested pairs ("cons" cells ala lisp). 
+    // The last type is assumed to be a row variable. 
+    export function rowPolymorphicList(types:Type[]) : Type {        
+        if (types.length == 0)
+            throw new Error("Expected a type list with at least one type variable")
+        else if (types.length == 1) {
+            if (types[0] instanceof TypeVariable)
+                return types[0];
+            else
+                throw new Error("Expected a row variable in the final position");
+        }
         else 
-            return typeArray([types[0], typeConsList(types.slice(1))]);
+            return typeArray([types[0], rowPolymorphicList(types.slice(1))]);
+    }
+
+    // Creates a row-polymorphic function type: adding the implicit row variable 
+    export function rowPolymorphicFunction(inputs:Type[], outputs:Type[]) : TypeArray {
+        var row = typeVariable('_');
+        inputs.push(row); 
+        outputs.push(row);
+        return functionType(rowPolymorphicList(inputs), rowPolymorphicList(outputs));
     }
 
     // Creates a type array from an array of types
@@ -459,6 +461,16 @@ export module TypeInference
     // Returns true if and only if the type is a type constant with the specified name
     export function isTypeConstant(t:Type, name:string) : boolean {
         return t instanceof TypeConstant && t.name === name;
+    }
+
+    // Returns true if and only if the type is a type constant with the specified name
+    export function isTypeVariable(t:Type, name:string) : boolean {
+        return t instanceof TypeVariable && t.name === name;
+    }
+
+    // Returns true if any of the types are the type variable
+    export function variableOccurs(name:string, type:Type) : boolean {
+        return descendantTypes(type).some(t => isTypeVariable(t, name));
     }
 
     // Returns true if and only if the type is a type constant with the specified name
@@ -523,11 +535,54 @@ export module TypeInference
         return t.clone(names);
     }
 
+    // Converts a number to a letter from 'a' to 'z'.
+    function numberToLetters(n:number) : string {
+        return String.fromCharCode(97 + n);
+    }
+
+    // Rename all type variables so that they are alphabetical in the order they occur in the tree
+    export function alphabetizeVarNames(t:Type) : Type {
+        var names = {};
+        var count = 0;
+        for (var dt of descendantTypes(t)) 
+            if (dt instanceof TypeVariable) 
+                if (!(dt.name in names))
+                    names[dt.name] = typeVariable(numberToLetters(count++));
+        return t.clone(names);
+    }
+
     // Compares whether two types are the same after normalizing the type variables. 
     export function areTypesSame(t1:Type, t2:Type) {
         var s1 = normalizeVarNames(t1).toString();
         var s2 = normalizeVarNames(t2).toString();
         return s1 === s2;
+    }
+ 
+    export function variableOccursOnInput(varName:string, type:TypeArray) {
+        for (var t of descendantTypes(type)) {
+            if (isFunctionType(t)) {
+                var input = functionInput(type);            
+                if (variableOccurs(varName, input)) {
+                    return true;
+                }
+            }
+        }
+    }
+
+    // Returns true if and only if the type is valid 
+    export function isValid(type:Type) {
+        for (var t of descendantTypes(type)) {
+            if (isTypeConstant(t, "rec")) {
+                return false;
+            }
+            else if (t instanceof TypeArray) {
+                if (isFunctionType(t)) 
+                    for (var p of t.typeParameterNames)
+                        if (!variableOccursOnInput(p, t))
+                            return false;                
+            }
+        }
+        return true;
     }
 
     //==========================================================================================
@@ -616,7 +671,7 @@ export module TypeInference
     }
 
     //============================================================
-    // Top level type operations which require unification 
+    // Top level type operations  
     // - Composition
     // - Application
     // - Quotation
@@ -669,14 +724,14 @@ export module TypeInference
     }
 
     // Applies a function to input arguments and returns the result 
-    export function applyFunction(fxn:TypeArray, args:TypeArray) : TypeArray {
+    export function applyFunction(fxn:TypeArray, args:Type) : Type {
         var u = new Unifier();
         fxn = fxn.clone({});
-        args = fxn.clone({});
+        args = args.clone({});
         var input = functionInput(fxn);
         var output = functionOutput(fxn);    
         u.unifyTypes(input, args);
-        return u.getUnifiedType(output, [], {}) as TypeArray;
+        return u.getUnifiedType(output, [], {});
     }
 
     // Creates a function type that generates the given type 
@@ -685,6 +740,78 @@ export module TypeInference
         return functionType(row, typeArray([x, row]));
     }
 
+    //=========================================================
+    // A simple helper class for implementing scoped programming languages with names like the lambda calculus.
+    // This class is more intended as an example of usage of the algorithm than for use in production code    
+
+    export class ScopedTypeInferenceEngine 
+    {
+        id : number = 0;
+        names : string[] = [];
+        types : Type[] = [];
+        unifier : Unifier = new Unifier();
+    
+        applyFunction(t:Type, args:Type) : Type {
+            if (!isFunctionType(t)) 
+            {
+                // Only variables and functions can be applied 
+                if (!(t instanceof TypeVariable))
+                    throw new Error("Type associated with " + name + " is neither a function type or a type variable: " + t);
+    
+                // Generate a new function type 
+                var newInputType = typeVariable(t.name + "_i");
+                var newOutputType = typeVariable(t.name + "_o");
+                var fxnType = functionType(newInputType, newOutputType);
+                
+                // Unify the new function type with the old variable 
+                this.unifier.unifyTypes(t, fxnType);
+                t = fxnType;
+            }
+    
+            this.unifier.unifyTypes(functionInput(t), args);
+            var r = functionOutput(t);
+            return this.unifier.getUnifiedType(r, [], {});
+        }
+    
+        introduceVariable(name:string) : Type {
+            var t = typeVariable(name + '$' + this.id++);
+            this.names.push(name);
+            this.types.push(t);
+            return t;
+        }
+    
+        lookupOrIntroduceVariable(name:string) : Type {
+            var n = this.indexOfVariable(name);
+            return (n < 0) ? this.introduceVariable(name) : this.types[n];
+        }
+    
+        assignVariable(name:string, t:Type) : Type {
+            return this.unifier.unifyTypes(this.lookupVariable(name), t);
+        }
+    
+        indexOfVariable(name:string) : number {
+            return this.names.lastIndexOf(name);
+        }
+    
+        lookupVariable(name:string) : Type {
+            var n = this.indexOfVariable(name);
+            if (n < 0) throw new Error("Could not find variable: " + name);
+            return this.types[n];
+        }
+    
+        getUnifiedType(t:Type) : Type {
+            var r = this.unifier.getUnifiedType(t, [], {});
+            if (r instanceof TypeArray)
+                r.computeParameters();
+            return r;
+        }
+    
+        popVariable() {
+            this.types.pop();
+            this.names.pop();
+        }
+    }
+    
     //=====================================================================
     // General purpose utility functions
 

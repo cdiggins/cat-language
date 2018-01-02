@@ -15,17 +15,10 @@ function printEnvironment(ce : cat.CatEnvironment) {
 }
 
 function testEvaluator() {
-    var ce = new cat.CatEvaluator();
-    ce.eval("6");
-    ce.print();
-    ce.eval("7");
-    ce.print();
-    ce.eval("mul");
-    ce.print();
-}
-
-function instructionToString(ci:cat.CatInstruction) : string {
-    return ci.name + " : " + cat.typeToString(ci.type);
+    var ce = new cat.CatEvaluator();    
+    ce.trace = true;
+    ce.eval("6 7 dup mul sub");
+    console.log("expected 43 on stack");
 }
 
 function testComposition() {
@@ -63,14 +56,47 @@ function testEnvironment() {
     printEnvironment(ce);
 }
 
-//testEvaluator();
-//testEnvironment();
-//testComposition();
-//testCompose("[dup]")
-//globalEnv.addDefinition("doubleDip", "dup dup", "('a -> 'a 'a 'a 's)");
-//globalEnv.addDefinition("test", "[dup] dup");
-//             "qdup"      : ["[dup]", "('S -> ('a 'R -> 'a 'a 'R) 'S)"],
+function outputInstruction(i : cat.CatInstruction) { 
+    console.log(i.toDebugString());
+}
 
+function outputDefinitions() {
+    var ce = new cat.CatEnvironment();
+
+    console.log('=====================');
+    console.log("Core Stack Operations")
+    console.log('=====================');
+    for (var k in ce.primOps) 
+        outputInstruction(ce.getInstruction(k));
+ 
+    console.log('===================');
+    console.log("Primitive Functions")
+    console.log('===================');
+    for (var k in ce.primFuncs) 
+        outputInstruction(ce.getInstruction(k));
+ 
+    console.log('================');
+    console.log("Standard Library")
+    console.log('================');
+    for (var k in ce.stdOps) 
+        outputInstruction(ce.getInstruction(k));
+}
+
+function outputGrammar() {
+    console.log('===========');
+    console.log('Cat Grammar');
+    console.log('===========');
+    console.log(cat.grammarString());
+
+    console.log('==============');
+    console.log('Cat AST Schema');
+    console.log('==============');
+    console.log(cat.astSchemaString());
+}
+
+outputGrammar();
+outputDefinitions();
+testEvaluator();
 
 declare var process : any;
 process.exit();

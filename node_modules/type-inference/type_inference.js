@@ -1,6 +1,9 @@
 "use strict";
-// A Type Inference Algorithm by Christopher Digginss  
-// A type inference algorithm that provides support for full inference of non-recursive higher rank polymorphic types
+// A Type Inference Algorithm that provides support for full inference 
+// of non-recursive higher rank polymorphic types.
+//
+// Copyright 2017 by Christopher Diggins 
+// Licensed under the MIT License
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -12,8 +15,6 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-// Copyright 2017 by Christopher Diggins 
-// Licensed under the MIT License
 // The one and only module
 var TypeInference;
 (function (TypeInference) {
@@ -175,7 +176,6 @@ var TypeInference;
             return _this;
         }
         TypeVariable.prototype.clone = function (newTypes) {
-            // TODO: if the type is a polytype we will need to generate fresh type variable names.
             return this.name in newTypes
                 ? newTypes[this.name]
                 : newTypes[this.name] = new TypeVariable(this.name);
@@ -223,7 +223,6 @@ var TypeInference;
     // Associate the variable with a new type scheme. Removing it from the previous varScheme 
     function _reassignVarScheme(v, t) {
         // Remove the variable from all other type schemes below the given one. 
-        // TODO: horrible complexity, but should work fine. 
         for (var _i = 0, _a = descendantTypes(t); _i < _a.length; _i++) {
             var x = _a[_i];
             if (x instanceof TypeArray)
@@ -242,7 +241,7 @@ var TypeInference;
         function Unifier() {
             // Used for generate fresh variable names 
             this.id = 0;
-            // Given a type variable name find the unifier. Multiple type varialbles will map to the same unifier 
+            // Given a type variable name find the unifier. Multiple type variables will map to the same unifier 
             this.unifiers = {};
         }
         // Unify both types, returning the most specific type possible. 
@@ -375,17 +374,6 @@ var TypeInference;
             if (t instanceof TypeVariable)
                 this._updateVariableUnifiers(t.name, u);
             return u.unifier;
-            /*
-            var u = this._getOrCreateUnifier(a);
-            u.unifier = this._chooseBestUnifier(u.unifier, t, depth);
-            this._updateVariableUnifiers(a.name, u);
-            if (t instanceof TypeVariable) {
-                // Make sure a unifier is created
-                var u2 = this._getOrCreateUnifier(t);
-                this._updateVariableUnifiers(t.name, u);
-            }
-            return u.unifier;
-            */
         };
         // Gets or creates a type unifiers for a type variables
         Unifier.prototype._getOrCreateUnifier = function (t) {
@@ -399,14 +387,29 @@ var TypeInference;
     TypeInference.Unifier = Unifier;
     //======================================================================================
     // Helper functions 
-    // Creates a type list as nested pairs ("cons" cells ala lisp)
-    function typeConsList(types) {
-        if (types.length < 3)
-            return typeArray(types);
+    // Creates a type list as nested pairs ("cons" cells ala lisp). 
+    // The last type is assumed to be a row variable. 
+    function rowPolymorphicList(types) {
+        if (types.length == 0)
+            throw new Error("Expected a type list with at least one type variable");
+        else if (types.length == 1) {
+            if (types[0] instanceof TypeVariable)
+                return types[0];
+            else
+                throw new Error("Expected a row variable in the final position");
+        }
         else
-            return typeArray([types[0], typeConsList(types.slice(1))]);
+            return typeArray([types[0], rowPolymorphicList(types.slice(1))]);
     }
-    TypeInference.typeConsList = typeConsList;
+    TypeInference.rowPolymorphicList = rowPolymorphicList;
+    // Creates a row-polymorphic function type: adding the implicit row variable 
+    function rowPolymorphicFunction(inputs, outputs) {
+        var row = typeVariable('_');
+        inputs.push(row);
+        outputs.push(row);
+        return functionType(rowPolymorphicList(inputs), rowPolymorphicList(outputs));
+    }
+    TypeInference.rowPolymorphicFunction = rowPolymorphicFunction;
     // Creates a type array from an array of types
     function typeArray(types) {
         return new TypeArray(types, true);
@@ -449,6 +452,16 @@ var TypeInference;
         return t instanceof TypeConstant && t.name === name;
     }
     TypeInference.isTypeConstant = isTypeConstant;
+    // Returns true if and only if the type is a type constant with the specified name
+    function isTypeVariable(t, name) {
+        return t instanceof TypeVariable && t.name === name;
+    }
+    TypeInference.isTypeVariable = isTypeVariable;
+    // Returns true if any of the types are the type variable
+    function variableOccurs(name, type) {
+        return descendantTypes(type).some(function (t) { return isTypeVariable(t, name); });
+    }
+    TypeInference.variableOccurs = variableOccurs;
     // Returns true if and only if the type is a type constant with the specified name
     function isTypeArray(t, name) {
         return t instanceof TypeArray && t.types.length == 2 && isTypeConstant(t.types[1], '[]');
@@ -515,6 +528,23 @@ var TypeInference;
         return t.clone(names);
     }
     TypeInference.normalizeVarNames = normalizeVarNames;
+    // Converts a number to a letter from 'a' to 'z'.
+    function numberToLetters(n) {
+        return String.fromCharCode(97 + n);
+    }
+    // Rename all type variables so that they are alphabetical in the order they occur in the tree
+    function alphabetizeVarNames(t) {
+        var names = {};
+        var count = 0;
+        for (var _i = 0, _a = descendantTypes(t); _i < _a.length; _i++) {
+            var dt = _a[_i];
+            if (dt instanceof TypeVariable)
+                if (!(dt.name in names))
+                    names[dt.name] = typeVariable(numberToLetters(count++));
+        }
+        return t.clone(names);
+    }
+    TypeInference.alphabetizeVarNames = alphabetizeVarNames;
     // Compares whether two types are the same after normalizing the type variables. 
     function areTypesSame(t1, t2) {
         var s1 = normalizeVarNames(t1).toString();
@@ -522,6 +552,37 @@ var TypeInference;
         return s1 === s2;
     }
     TypeInference.areTypesSame = areTypesSame;
+    function variableOccursOnInput(varName, type) {
+        for (var _i = 0, _a = descendantTypes(type); _i < _a.length; _i++) {
+            var t = _a[_i];
+            if (isFunctionType(t)) {
+                var input = functionInput(type);
+                if (variableOccurs(varName, input)) {
+                    return true;
+                }
+            }
+        }
+    }
+    TypeInference.variableOccursOnInput = variableOccursOnInput;
+    // Returns true if and only if the type is valid 
+    function isValid(type) {
+        for (var _i = 0, _a = descendantTypes(type); _i < _a.length; _i++) {
+            var t = _a[_i];
+            if (isTypeConstant(t, "rec")) {
+                return false;
+            }
+            else if (t instanceof TypeArray) {
+                if (isFunctionType(t))
+                    for (var _b = 0, _c = t.typeParameterNames; _b < _c.length; _b++) {
+                        var p = _c[_b];
+                        if (!variableOccursOnInput(p, t))
+                            return false;
+                    }
+            }
+        }
+        return true;
+    }
+    TypeInference.isValid = isValid;
     //==========================================================================================
     // Type Environments 
     // 
@@ -604,7 +665,7 @@ var TypeInference;
     }());
     TypeInference.TypeEnv = TypeEnv;
     //============================================================
-    // Top level type operations which require unification 
+    // Top level type operations  
     // - Composition
     // - Application
     // - Quotation
@@ -656,7 +717,7 @@ var TypeInference;
     function applyFunction(fxn, args) {
         var u = new Unifier();
         fxn = fxn.clone({});
-        args = fxn.clone({});
+        args = args.clone({});
         var input = functionInput(fxn);
         var output = functionOutput(fxn);
         u.unifyTypes(input, args);
@@ -669,6 +730,68 @@ var TypeInference;
         return functionType(row, typeArray([x, row]));
     }
     TypeInference.quotation = quotation;
+    //=========================================================
+    // A simple helper class for implementing scoped programming languages with names like the lambda calculus.
+    // This class is more intended as an example of usage of the algorithm than for use in production code    
+    var ScopedTypeInferenceEngine = /** @class */ (function () {
+        function ScopedTypeInferenceEngine() {
+            this.id = 0;
+            this.names = [];
+            this.types = [];
+            this.unifier = new Unifier();
+        }
+        ScopedTypeInferenceEngine.prototype.applyFunction = function (t, args) {
+            if (!isFunctionType(t)) {
+                // Only variables and functions can be applied 
+                if (!(t instanceof TypeVariable))
+                    throw new Error("Type associated with " + name + " is neither a function type or a type variable: " + t);
+                // Generate a new function type 
+                var newInputType = typeVariable(t.name + "_i");
+                var newOutputType = typeVariable(t.name + "_o");
+                var fxnType = functionType(newInputType, newOutputType);
+                // Unify the new function type with the old variable 
+                this.unifier.unifyTypes(t, fxnType);
+                t = fxnType;
+            }
+            this.unifier.unifyTypes(functionInput(t), args);
+            var r = functionOutput(t);
+            return this.unifier.getUnifiedType(r, [], {});
+        };
+        ScopedTypeInferenceEngine.prototype.introduceVariable = function (name) {
+            var t = typeVariable(name + '$' + this.id++);
+            this.names.push(name);
+            this.types.push(t);
+            return t;
+        };
+        ScopedTypeInferenceEngine.prototype.lookupOrIntroduceVariable = function (name) {
+            var n = this.indexOfVariable(name);
+            return (n < 0) ? this.introduceVariable(name) : this.types[n];
+        };
+        ScopedTypeInferenceEngine.prototype.assignVariable = function (name, t) {
+            return this.unifier.unifyTypes(this.lookupVariable(name), t);
+        };
+        ScopedTypeInferenceEngine.prototype.indexOfVariable = function (name) {
+            return this.names.lastIndexOf(name);
+        };
+        ScopedTypeInferenceEngine.prototype.lookupVariable = function (name) {
+            var n = this.indexOfVariable(name);
+            if (n < 0)
+                throw new Error("Could not find variable: " + name);
+            return this.types[n];
+        };
+        ScopedTypeInferenceEngine.prototype.getUnifiedType = function (t) {
+            var r = this.unifier.getUnifiedType(t, [], {});
+            if (r instanceof TypeArray)
+                r.computeParameters();
+            return r;
+        };
+        ScopedTypeInferenceEngine.prototype.popVariable = function () {
+            this.types.pop();
+            this.names.pop();
+        };
+        return ScopedTypeInferenceEngine;
+    }());
+    TypeInference.ScopedTypeInferenceEngine = ScopedTypeInferenceEngine;
     //=====================================================================
     // General purpose utility functions
     // Returns only the uniquely named strings

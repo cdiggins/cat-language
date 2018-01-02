@@ -3,8 +3,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var type_inference_1 = require("./type_inference");
 var myna_1 = require("./node_modules/myna-parser/myna");
 var verbose = false;
+// Defines syntax parsers for type expressions and a simple lambda calculus
 function registerGrammars() {
-    // This is a more verbose type grammar than the one used in Cat. 
+    // A simple grammar for parsing type expressions
     var typeGrammar = new function () {
         var _this = this;
         this.typeExprRec = myna_1.Myna.delay(function () { return _this.typeExpr; });
@@ -14,9 +15,20 @@ function registerGrammars() {
         this.typeExpr = myna_1.Myna.choice(this.typeList, this.typeVar, this.typeConstant).ast;
     };
     myna_1.Myna.registerGrammar('type', typeGrammar, typeGrammar.typeExpr);
+    // A simple grammar for parsing the lambda calculus 
+    var lambdaGrammar = new function () {
+        var _this = this;
+        this.recExpr = myna_1.Myna.delay(function () { return _this.expr; });
+        this.var = myna_1.Myna.identifier.ast;
+        this.abstraction = myna_1.Myna.guardedSeq("\\", this.var, ".").then(this.recExpr).ast;
+        this.parenExpr = myna_1.Myna.guardedSeq("(", this.recExpr, ")").ast;
+        this.expr = myna_1.Myna.choice(this.parenExpr, this.abstraction, this.var).then(myna_1.Myna.ws).oneOrMore.ast;
+    };
+    myna_1.Myna.registerGrammar('lambda', lambdaGrammar, lambdaGrammar.expr);
 }
 registerGrammars();
-var parser = myna_1.Myna.parsers['type'];
+var typeParser = myna_1.Myna.parsers['type'];
+var lcParser = myna_1.Myna.parsers['lambda'];
 function runTest(f, testName, expectFail) {
     if (expectFail === void 0) { expectFail = false; }
     try {
@@ -40,10 +52,18 @@ function runTest(f, testName, expectFail) {
     }
 }
 function stringToType(input) {
-    var ast = parser(input);
+    var ast = typeParser(input);
     if (ast.end != input.length)
         throw new Error("Only part of input was consumed");
     return astToType(ast);
+}
+function typeToString(t) {
+    if (t instanceof type_inference_1.TypeInference.TypeVariable)
+        return "'" + t.name;
+    else if (t instanceof type_inference_1.TypeInference.TypeArray)
+        return "(" + t.types.map(typeToString).join(" ") + ")";
+    else
+        return t.toString();
 }
 function astToType(ast) {
     if (!ast)
@@ -63,34 +83,6 @@ function astToType(ast) {
             throw new Error("Unrecognized type expression: " + ast.name);
     }
 }
-function testClone(input, fail) {
-    if (fail === void 0) { fail = false; }
-    runTest(function () {
-        var t = stringToType(input);
-        console.log("Original   : " + t);
-        t = t.clone({});
-        console.log("Cloned     : " + t);
-        t = t.freshVariableNames(0);
-        console.log("Fresh vars : " + t);
-        t = type_inference_1.TypeInference.normalizeVarNames(t);
-        console.log("Normalized : " + t);
-        return true;
-    }, input, fail);
-}
-function runCloneTests() {
-    testClone("(('a 'b) -> ('b 'c))");
-    testClone("('a)");
-    testClone("('a 'b)");
-    testClone("('a ('b))");
-    testClone("('a ('b) ('a))");
-    testClone("('a ('b) ('a ('c) ('c 'd)))");
-    testClone("('a -> 'b)");
-    testClone("(('a *) -> int)");
-    testClone("(('a 'b) -> ('b 'c))");
-    testClone("(('a ('b 'c)) -> ('a 'c))");
-    for (var k in coreTypes)
-        testClone(coreTypes[k]);
-}
 function testParse(input, fail) {
     if (fail === void 0) { fail = false; }
     runTest(function () { return stringToType(input); }, input, fail);
@@ -103,44 +95,76 @@ var coreTypes = {
     swap: "(('a ('b 'c)) -> ('b ('a 'c)))",
     pop: "(('a 'b) -> 'b)",
 };
-function testComposition(a, b, fail) {
-    if (fail === void 0) { fail = false; }
-    runTest(function () {
-        var expr1 = stringToType(a);
-        if (verbose)
-            console.log("Type A: " + expr1.toString());
-        var expr2 = stringToType(b);
-        if (verbose)
-            console.log("Type B: " + expr2.toString());
-        var r = type_inference_1.TypeInference.composeFunctions(expr1, expr2);
-        if (verbose)
-            console.log("Composed type: " + r.toString());
-        // Return a prettified version of the function
-        r = type_inference_1.TypeInference.normalizeVarNames(r);
-        return r.toString();
-    }, "Composing " + a + " with " + b, fail);
-}
-function testUnifyChain(ops) {
-    var t1 = coreTypes[ops[0]];
-    var t2 = coreTypes[ops[1]];
-    testComposition(t1, t2);
-}
-function testComposingCoreOps() {
-    for (var op1 in coreTypes) {
-        for (var op2 in coreTypes) {
-            console.log(op1 + " " + op2);
-            testComposition(coreTypes[op1], coreTypes[op2]);
-        }
+var combinators = {
+    i: "\\x.x",
+    k: "\\x.\\y.x",
+    s: "\\x.\\y.\\z.x z (y z)",
+    b: "\\x.\\y.\\z.x (y z)",
+    c: "\\x.\\y.\\z.x y z",
+    w: "\\x.\\y.x y y",
+    m: "\\x.x x",
+    succ: "\\n.\\f.\\x.f (n f x)",
+    pred: "\\n.\\f.\\x.n (\\g.\\h.h (g f)) (\\u.x) (\\t.t)",
+    plus: "\\m.\\n.\\f.\\x.m f (n f x)",
+    mul: "\\m.\\n.\\f.m (n f)",
+    zero: "\\f.\\x.x",
+    one: "\\f.\\x.f x",
+    two: "\\f.\\x.f (f x)",
+    three: "\\f.\\x.f (f (f x))",
+    True: "\\x.\\y.x",
+    False: "\\x.\\y.y",
+    pair: "\\x.\\y.\\f.f x y",
+    first: "\\p.p \\x.\\y.x",
+    second: "\\p.p \\x.\\y.y",
+    nil: "\\a.\\x.\\y.x",
+    null: "\\p.p (\\a.\\b.\\x.\\y.y)",
+};
+function lambdaAstToType(ast, engine) {
+    switch (ast.rule.name) {
+        case "abstraction":
+            {
+                var arg = engine.introduceVariable(ast.children[0].allText);
+                var body = lambdaAstToType(ast.children[1], engine);
+                var fxn = type_inference_1.TypeInference.functionType(arg, body);
+                engine.popVariable();
+                return fxn;
+            }
+        case "parenExpr":
+            return lambdaAstToType(ast.children[0], engine);
+        case "var":
+            return engine.lookupVariable(ast.allText);
+        case "expr":
+            {
+                var r = lambdaAstToType(ast.children[0], engine);
+                for (var i = 1; i < ast.children.length; ++i) {
+                    var args = lambdaAstToType(ast.children[i], engine);
+                    r = engine.applyFunction(r, args);
+                }
+                return r;
+            }
+        default:
+            throw new Error("Unrecognized ast rule " + ast.rule);
     }
 }
-function outputCompositions() {
-    for (var op1 in coreTypes) {
-        for (var op2 in coreTypes) {
-            var expr1 = stringToType(coreTypes[op1]);
-            var expr2 = stringToType(coreTypes[op2]);
-            var r = type_inference_1.TypeInference.composeFunctions(expr1, expr2);
-            r = type_inference_1.TypeInference.normalizeVarNames(r);
-            console.log('["' + op1 + " " + op2 + '", "' + r.toString() + '"],');
+function stringToLambdaExprType(s) {
+    var e = new type_inference_1.TypeInference.ScopedTypeInferenceEngine();
+    var ast = lcParser(s);
+    if (ast.end != s.length)
+        throw new Error("Only part of input was consumed");
+    var t = lambdaAstToType(ast, e);
+    t = e.getUnifiedType(t);
+    t = type_inference_1.TypeInference.alphabetizeVarNames(t);
+    return t;
+}
+function testLambdaCalculus() {
+    for (var k in combinators) {
+        try {
+            var s = combinators[k];
+            var t = stringToLambdaExprType(s);
+            console.log(k + " = " + s + " : " + t);
+        }
+        catch (e) {
+            console.log("FAILED: " + k + " " + e);
         }
     }
 }
@@ -151,6 +175,24 @@ function printCoreTypes() {
         console.log(k);
         console.log(ts);
         console.log(t.toString());
+    }
+}
+function testForallInference() {
+    var data = {
+        apply: "!t1.(!t0.((t0 -> t1) t0) -> t1)",
+        compose: "!t1!t2!t3.(!t0.((t0 -> t1) ((t2 -> t0) t3)) -> ((t2 -> t1) t3))",
+        quote: "!t0!t1.((t0 t1) -> (!t2.(t2 -> (t0 t2)) t1))",
+        dup: "!t0!t1.((t0 t1) -> (t0 (t0 t1)))",
+        swap: "!t0!t1!t2.((t0 (t1 t2)) -> (t1 (t0 t2)))",
+        pop: "!t1.(!t0.(t0 t1) -> t1)",
+    };
+    for (var k in data) {
+        var expType = data[k];
+        var infType = type_inference_1.TypeInference.normalizeVarNames(stringToType(coreTypes[k]));
+        if (infType != expType)
+            console.log("FAILED: " + k + " + expected " + expType + " got " + infType);
+        else
+            console.log("PASSED: " + k);
     }
 }
 function regressionTestComposition() {
@@ -208,10 +250,9 @@ function regressionTestComposition() {
         }
     }
 }
-//runCloneTests();
-//printCoreTypes();
-//testComposingCoreOps();
-//outputCompositions();
+printCoreTypes();
+testLambdaCalculus();
+testForallInference();
 regressionTestComposition();
 process.exit();
 //# sourceMappingURL=test.js.map

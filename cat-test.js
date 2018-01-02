@@ -14,15 +14,9 @@ function printEnvironment(ce) {
 }
 function testEvaluator() {
     var ce = new cat_1.CatLanguage.CatEvaluator();
-    ce.eval("6");
-    ce.print();
-    ce.eval("7");
-    ce.print();
-    ce.eval("mul");
-    ce.print();
-}
-function instructionToString(ci) {
-    return ci.name + " : " + cat_1.CatLanguage.typeToString(ci.type);
+    ce.trace = true;
+    ce.eval("6 7 dup mul sub");
+    console.log("expected 43 on stack");
 }
 function testComposition() {
     var ce = new cat_1.CatLanguage.CatEnvironment();
@@ -55,5 +49,39 @@ function testEnvironment() {
     var ce = new cat_1.CatLanguage.CatEnvironment();
     printEnvironment(ce);
 }
+function outputInstruction(i) {
+    console.log(i.toDebugString());
+}
+function outputDefinitions() {
+    var ce = new cat_1.CatLanguage.CatEnvironment();
+    console.log('=====================');
+    console.log("Core Stack Operations");
+    console.log('=====================');
+    for (var k in ce.primOps)
+        outputInstruction(ce.getInstruction(k));
+    console.log('===================');
+    console.log("Primitive Functions");
+    console.log('===================');
+    for (var k in ce.primFuncs)
+        outputInstruction(ce.getInstruction(k));
+    console.log('================');
+    console.log("Standard Library");
+    console.log('================');
+    for (var k in ce.stdOps)
+        outputInstruction(ce.getInstruction(k));
+}
+function outputGrammar() {
+    console.log('===========');
+    console.log('Cat Grammar');
+    console.log('===========');
+    console.log(cat_1.CatLanguage.grammarString());
+    console.log('==============');
+    console.log('Cat AST Schema');
+    console.log('==============');
+    console.log(cat_1.CatLanguage.astSchemaString());
+}
+outputGrammar();
+outputDefinitions();
+testEvaluator();
 process.exit();
 //# sourceMappingURL=cat-test.js.map

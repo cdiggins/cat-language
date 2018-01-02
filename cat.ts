@@ -42,29 +42,46 @@ export module CatLanguage
     // Register the Cat grammar 
     m.registerGrammar('cat', catGrammar, catGrammar.program);
 
+    // Outputs the AST tree generated from the Cat grammar
+    export function astSchemaString() : string {
+        return m.astSchemaToString('cat');
+    }
+
+    // Outputs the Cat grammar as a string 
+    export function grammarString() : string {
+        return m.grammarToString('cat');
+    }
+
     //====================================================================
     // Helper Functions
 
     // Converts a cons list into a flat list of types like Cat prefers
-    export function consListToString(t:ti.Type) : string {
+    function consListToString(t:ti.Type) : string {
         if (t instanceof ti.TypeArray)
-            return typeToString(t.types[0]) + " " + consListToString(t.types[1]);
+            return _typeToString(t.types[0]) + " " + consListToString(t.types[1]);
         else 
-            return typeToString(t);
+            return _typeToString(t);
     }
 
     // Converts a string into a type expression
-    export function typeToString(t:ti.Type) : string {
+    function _typeToString(t:ti.Type) : string {        
         if (ti.isFunctionType(t)) {
             return "(" 
                 + consListToString(ti.functionInput(t)) + " -> " 
                 + consListToString(ti.functionOutput(t)) + ")";
+        }
+        else if (t instanceof ti.TypeVariable) {        
+            return "'" + t.toString();
         }
         else {
             return t.toString();
         }
     }
 
+    export function typeToString(t:ti.Type) : string {
+        return _typeToString(ti.normalizeVarNames(t));
+    }
+        
     // Converts a string into a type expression
     export function stringToType(input:string) : ti.Type {
         var ast = m.parse(m.grammars['cat'].typeExpr, input);
@@ -160,14 +177,6 @@ export module CatLanguage
         throw new Error("Could not figure out the type of the data: " + data);    
     }
 
-    // Creates a Cat function type: adding the implicit row variable 
-    export function createCatFunctionType(inputs:ti.Type[], outputs:ti.Type[]) : ti.TypeArray {
-        var row = ti.typeVariable('_');
-        inputs.push(row); 
-        outputs.push(row);
-        return ti.functionType(ti.typeConsList(inputs), ti.typeConsList(outputs));
-    }
-
     // Returns true if the type can be a valid input/output of a Cat function type.
     export function isValidFunctionPart(t:ti.Type) : boolean {
         if (t instanceof ti.TypeArray) {
@@ -244,6 +253,10 @@ export module CatLanguage
         toString() : string {
             return this.name;
         }
+
+        toDebugString() : string {
+            return this.name + "\t: " + typeToString(this.type);
+        }
     }
 
     // A list of instructions 
@@ -258,8 +271,12 @@ export module CatLanguage
             ); 
         }
 
-        toString() : string {
+        definitionString() : string {
             return this.instructions.map(i => i.toString()).join(" ");
+        }
+
+        toDebugString() : string {
+            return this.name + "\t: " + typeToString(this.type) + " = { " + this.definitionString() + "}";
         }
     };
 
@@ -277,6 +294,10 @@ export module CatLanguage
         toString() : string {
             return '[' + this.instructions.map(i => i.toString()).join(" ") + ']';
         }
+
+        toDebugString() : string {
+            return this.name + "\t: " + typeToString(this.type) + "\t = { " + this.toString() + "}";
+        }
     };
 
     // An instruction that pushes data on the stack
@@ -284,13 +305,17 @@ export module CatLanguage
         constructor(
             public data:CatValue)
         { 
-            super("_constant_", 
+            super(data.toString(), 
                 (stack) => stack.push(data),
-                createCatFunctionType([], [dataType(data)]));        
+                ti.rowPolymorphicFunction([], [dataType(data)]));        
         }
 
         toString() : string {
             return this.data.toString();
+        }
+
+        toDebugString() : string {
+            return this.name + "\t: " + typeToString(this.type) + "\t = { " + this.toString() + "}";
         }
     };
 
@@ -449,11 +474,6 @@ export module CatLanguage
         }
         
         // Helper function to get the function associated with an instruction
-        getFunction(s:string) : Function {
-            return this.getInstruction(s).func;
-        }
-
-        // Helper function to get the function associated with an instruction
         getInstruction(s:string) : CatInstruction {
             if (!(s in this.instructions))
                 throw new Error("Could not find instruction: " + s);
@@ -475,6 +495,7 @@ export module CatLanguage
             return r;
         }
 
+        // Returns the type of a quotation given the nodes in the quotation
         getQuotationType(astNodes : m.AstNode[]) : ti.TypeArray {
             var types = astNodes.map(ast => astToType(ast) as ti.TypeArray);
             return ti.composeFunctionChain(types);
@@ -544,10 +565,11 @@ export module CatLanguage
     {
         env : CatEnvironment = new CatEnvironment();
         stk : CatStack = new CatStack();
-        type : ti.TypeArray = ti.typeArray([]);
+        type : ti.Type = ti.typeArray([]);
+        trace : boolean = true;
         
         print() {
-            console.log(this.stk);
+            console.log("stack = " + this.stk.stack + " : " + typeToString(this.type));
         }
 
         eval(s : string) {
@@ -557,38 +579,29 @@ export module CatLanguage
         evalTerms(ast : m.AstNode) {
             ast.children.forEach(c => this.evalTerm(c));
         }
+            
+        evalInstruction(instruction : CatInstruction) {
+            if (this.trace) 
+                console.log("evaluating " + instruction.toDebugString());
 
-        evalInstruction(instruction : string) {
-            var type = this.env.getType(instruction);
-            var f = this.env.getFunction(instruction);
-            if (!f) throw new Error("Could not find function " + instruction);
-            this.type = ti.applyFunction(this.type, type);
-            f(this.stk);            
-        }
-
-        push(value : any, type : ti.Type) {
-            this.type.types.unshift(type);
-            this.stk.push(value);
+            // Apply the function type to the stack type
+            this.type = ti.applyFunction(instruction.type, this.type);
+            
+            // Apply the function to the stack 
+            instruction.func(this.stk); 
+            
+            if (this.trace)
+                this.print();                      
         }
 
         evalTerm(ast : m.AstNode) {
-            if (!ast) throw new Error("Not a valid AST");        
+            if (!ast) throw new Error("Not a valid AST");
             switch (ast.name) 
             {
                 case "terms":
-                    return this.evalTerms(ast);
-                case "identifier":
-                    return this.evalInstruction(ast.allText);
-                case "integer":
-                    return this.push(parseInt(ast.allText), this.env.getTypeFromAst(ast));
-                case "true":
-                    return this.push(true, this.env.getTypeFromAst(ast));
-                case "false":
-                    return this.push(false, this.env.getTypeFromAst(ast));
-                case "quotation":
-                    return this.push((stk) => this.evalTerms(ast), this.env.getTypeFromAst(ast));
+                    return this.evalTerms(ast);                
                 default:
-                    throw new Error("AST node type is not executable: " + ast.name);
+                    return this.evalInstruction(astToInstruction(ast, this.env));
             }
         }
     }
