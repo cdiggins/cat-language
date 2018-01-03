@@ -32,31 +32,31 @@ Identifiers preceded by an apostrophe are type variables which can map any type,
 The following are some of the standard library of Cat:
 
 ```
-dip	        = { swap quote compose apply}
-rcompose    = { swap compose}
-papply	    = { quote rcompose}
-dipd	    = { swap [dip] dip}
-popd	    = { [pop] dip}
-popop	    = { pop pop}
-dupd	    = { [dup] dip}
-swapd	    = { [swap] dip}
-rollup	    = { swap swapd}
-rolldown    = { swapd swap}
+dip      = { swap quote compose apply}
+rcompose = { swap compose}
+papply   = { quote rcompose}
+dipd     = { swap [dip] dip}
+popd     = { [pop] dip}
+popop    = { pop pop}
+dupd     = { [dup] dip}
+swapd    = { [swap] dip}
+rollup   = { swap swapd}
+rolldown = { swapd swap}
 ```
 
 The types inferred are as follows: 
 
 ```
-dip	        : (('t0 -> 't1) 't2 't0 -> 't2 't1) 
-rcompose	: (('t0 -> 't1) ('t1 -> 't2) 't3 -> ('t0 -> 't2) 't3) 
-papply	    : ('t0 ('t0 't1 -> 't2) 't3 -> ('t1 -> 't2) 't3) 
-dipd	    : (('t0 -> 't1) 't2 't3 't0 -> 't2 't3 't1) 
-popd	    : ('t0 't1 't2 -> 't0 't2) 
-popop	    : ('t0 't1 't2 -> 't2) 
-dupd	    : ('t0 't1 't2 -> 't0 't1 't1 't2) 
-swapd	    : ('t0 't1 't2 't3 -> 't0 't2 't1 't3) 
-rollup	    : ('t0 't1 't2 't3 -> 't1 't2 't0 't3) 
-rolldown	: ('t0 't1 't2 't3 -> 't2 't0 't1 't3) 
+dip	     : (('t0 -> 't1) 't2 't0 -> 't2 't1) 
+rcompose : (('t0 -> 't1) ('t1 -> 't2) 't3 -> ('t0 -> 't2) 't3) 
+papply   : ('t0 ('t0 't1 -> 't2) 't3 -> ('t1 -> 't2) 't3) 
+dipd     : (('t0 -> 't1) 't2 't3 't0 -> 't2 't3 't1) 
+popd     : ('t0 't1 't2 -> 't0 't2) 
+popop    : ('t0 't1 't2 -> 't2) 
+dupd     : ('t0 't1 't2 -> 't0 't1 't1 't2) 
+swapd    : ('t0 't1 't2 't3 -> 't0 't2 't1 't3) 
+rollup   : ('t0 't1 't2 't3 -> 't1 't2 't0 't3) 
+rolldown : ('t0 't1 't2 't3 -> 't2 't0 't1 't3) 
 ```
 
 ## Formalized Types of Cat
