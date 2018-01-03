@@ -9,6 +9,7 @@ import { Myna as m } from "./node_modules/myna-parser/myna";
 // A type-inference library: https://github.com/cdiggins/type-inference
 import { TypeInference as ti } from "./node_modules/type-inference/type_inference";
 
+// This is a full rewrite of the Cat language (which was originally in C#) written in TypeScript 
 export module CatLanguage
 {
     // Defines a Myna grammar for parsing Cat programs and types

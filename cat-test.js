@@ -13,6 +13,9 @@ function printEnvironment(ce) {
     }
 }
 function testEvaluator() {
+    console.log("=================");
+    console.log("Testing evaluator");
+    console.log("=================");
     var ce = new cat_1.CatLanguage.CatEvaluator();
     ce.trace = true;
     ce.eval("6 7 dup mul sub");
@@ -58,7 +61,7 @@ function outputDefinitions() {
     console.log("Core Stack Operations");
     console.log('=====================');
     for (var k in ce.primOps)
-        outputInstruction(ce.getInstruction(k));
+        console.log(k + " : " + ce.primOps[k]);
     console.log('===================');
     console.log("Primitive Functions");
     console.log('===================');
@@ -80,8 +83,34 @@ function outputGrammar() {
     console.log('==============');
     console.log(cat_1.CatLanguage.astSchemaString());
 }
+function outputFormalTypes() {
+    var ce = new cat_1.CatLanguage.CatEnvironment();
+    console.log('=======================');
+    console.log("Core Stack Formal Types");
+    console.log('=======================');
+    for (var k in ce.primOps) {
+        var i = ce.getInstruction(k);
+        console.log(k + " : " + i.type.toString());
+    }
+    console.log('=============================');
+    console.log("Standard Library Formal Types");
+    console.log('=============================');
+    for (var k in ce.stdOps) {
+        var i = ce.getInstruction(k);
+        var t = type_inference_1.TypeInference.alphabetizeVarNames(i.type);
+        console.log(k + " : " + t);
+    }
+}
+function testTypes() {
+    var ce = new cat_1.CatLanguage.CatEvaluator();
+    var i = ce.env.addDefinition("test", "quote dup apply");
+    console.log("Type of " + i.name + " : " + i.type);
+    ce.eval("10 test");
+}
 outputGrammar();
 outputDefinitions();
+outputFormalTypes();
 testEvaluator();
+testTypes();
 process.exit();
 //# sourceMappingURL=cat-test.js.map
