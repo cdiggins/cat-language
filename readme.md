@@ -1,6 +1,6 @@
 # Cat Programming Language 
 
-Cat is a statically typed stack-based pure functional language inspired by [Joy](https://en.wikipedia.org/wiki/Joy_(programming_language). Cat has no variables, only instructions which manipulate a stack (e.g. `dup`, `pop`, `swap`), and a special expression form called a quotation (e.g. `[1 add]`) which pushes an expression onto the stack which can be executed at a later time (e.g. using `apply` or `dip`). 
+Cat is a statically typed stack-based pure functional language inspired by [Joy](https://en.wikipedia.org/wiki/Joy_(programming_language)). Cat has no variables, only instructions which manipulate a stack (e.g. `dup`, `pop`, `swap`), and a special expression form called a quotation (e.g. `[1 add]`) which pushes an expression onto the stack which can be executed at a later time (e.g. using `apply` or `dip`). 
 
 For example: `6 7 dup mul sub` results in a stack with the value 43 on top. 
 
@@ -32,31 +32,31 @@ Identifiers preceded by an apostrophe are type variables which can map any type,
 The following are some of the standard library of Cat:
 
 ```
-dip	        = { swap quote compose apply}
-rcompose    = { swap compose}
-papply	    = { quote rcompose}
-dipd	    = { swap [dip] dip}
-popd	    = { [pop] dip}
-popop	    = { pop pop}
-dupd	    = { [dup] dip}
-swapd	    = { [swap] dip}
-rollup	    = { swap swapd}
-rolldown    = { swapd swap}
+dip      = { swap quote compose apply}
+rcompose = { swap compose}
+papply   = { quote rcompose}
+dipd     = { swap [dip] dip}
+popd     = { [pop] dip}
+popop    = { pop pop}
+dupd     = { [dup] dip}
+swapd    = { [swap] dip}
+rollup   = { swap swapd}
+rolldown = { swapd swap}
 ```
 
 The types inferred are as follows: 
 
 ```
-dip	        : (('t0 -> 't1) 't2 't0 -> 't2 't1) 
-rcompose	: (('t0 -> 't1) ('t1 -> 't2) 't3 -> ('t0 -> 't2) 't3) 
-papply	    : ('t0 ('t0 't1 -> 't2) 't3 -> ('t1 -> 't2) 't3) 
-dipd	    : (('t0 -> 't1) 't2 't3 't0 -> 't2 't3 't1) 
-popd	    : ('t0 't1 't2 -> 't0 't2) 
-popop	    : ('t0 't1 't2 -> 't2) 
-dupd	    : ('t0 't1 't2 -> 't0 't1 't1 't2) 
-swapd	    : ('t0 't1 't2 't3 -> 't0 't2 't1 't3) 
-rollup	    : ('t0 't1 't2 't3 -> 't1 't2 't0 't3) 
-rolldown	: ('t0 't1 't2 't3 -> 't2 't0 't1 't3) 
+dip	     : (('t0 -> 't1) 't2 't0 -> 't2 't1) 
+rcompose : (('t0 -> 't1) ('t1 -> 't2) 't3 -> ('t0 -> 't2) 't3) 
+papply   : ('t0 ('t0 't1 -> 't2) 't3 -> ('t1 -> 't2) 't3) 
+dipd     : (('t0 -> 't1) 't2 't3 't0 -> 't2 't3 't1) 
+popd     : ('t0 't1 't2 -> 't0 't2) 
+popop    : ('t0 't1 't2 -> 't2) 
+dupd     : ('t0 't1 't2 -> 't0 't1 't1 't2) 
+swapd    : ('t0 't1 't2 't3 -> 't0 't2 't1 't3) 
+rollup   : ('t0 't1 't2 't3 -> 't1 't2 't0 't3) 
+rolldown : ('t0 't1 't2 't3 -> 't2 't0 't1 't3) 
 ```
 
 ## Formalized Types of Cat
@@ -86,15 +86,17 @@ Quotations are an example of a higher-order function: it pushes an expression (a
 
 Cat supports higher-rank parametric polymorphism without recursive types and is fully inferred without requiring any user annotation. 
 
-Types describe the effect of a function on a stack. Every function requires a well-typed stack and generates a well-typed stack of a particular configuration. The types of the valu
+Types describe the effect of a function on a stack. Every function requires a well-typed stack and generates a well-typed stack of a particular configuration. The type configuration of the output stack can always be statically determined based on the types of the input stack.  
 
-The [type inference module](https://github.com/cdiggins/type-inference) was developed as a separate standalone package so that it can be reused in other language projects targetting JavaScript or TypeScript, or could be easily translated into other languages. 
+The [type inference module](https://github.com/cdiggins/type-inference) was developed as a separate standalone package so that it can be reused in other language projects targetting JavaScript or TypeScript, or could be easily translated into other languages.
+
+## Embedding Cat in Haskell or ML
+
+Cat cannot be embedded in languages which only support rank-1 polymorphic types (e.g. Haskell, ML). Short version is that these languages can't properly infer the type of the expression `quote dup`. For more information and demonstration see the [type-inference repository](https://github.com/cdiggins/type-inference). 
 
 ## History: from V1 to V2
 
-This is a reimplementation of the original Cat language (v1) last released in 2008, which was written in C# and ran only on Windows. The version of Cat is written in TypeScript and translated to ES5 compliant JavaScript. The Cat language v2 has been simplified and the type system has been more rigorously formalized. 
-
-I've developed the [type inference module](https://github.com/cdiggins/type-inference) and the [parsing module](https://github.com/cdiggins/myna-parser) as separate standalone packages so that they can be reused in other language projects in JavaScript or TypeScript.
+This is a reimplementation of the original Cat language (v1) released and frozen in 2008, which was written in C# and ran only on Windows. The version of Cat is written in TypeScript and translated to ES5 compliant JavaScript. The Cat language specification has been simplified and the type system has been more rigorously formalized. The original language was a playground for various ideas, but it seemed that over the years the primary interest in the language focused on the simple semantics and the deceptively simple type algorithm, which I later discovered was a higher-rank polymorphic type system. 
 
 ## Appendix: Cat Grammar
 
