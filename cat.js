@@ -433,7 +433,8 @@ var CatLanguage;
                 "swapd": ["[swap] dip", "('a 'b 'c 'S -> 'a 'c 'b 'S)"],
                 "rollup": ["swap swapd", "('a 'b 'c 'S -> 'b 'c 'a 'S)"],
                 "rolldown": ["swapd swap", "('a 'b 'c 'S -> 'c 'a 'b 'S)"],
-                "if": ["cond apply", "(Bool ('A -> 'B) ('A -> 'B) 'A -> 'B)"]
+                "if": ["cond apply", "(Bool ('A -> 'B) ('A -> 'B) 'A -> 'B)"],
+                "id": ["", "('A -> 'A)"]
             };
             var _loop_1 = function (k) {
                 this_1.addInstruction(k, function (stack) { return stack[k](); }, this_1.primOps[k]);

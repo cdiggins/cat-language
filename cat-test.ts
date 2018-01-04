@@ -123,6 +123,13 @@ function testTypes() {
     var i = ce.env.addDefinition("test", "quote dup apply");
     console.log("Type of " + i.name + " : " + i.type);
     ce.eval("10 test");
+
+    // (\id. id (\x x + 2) (id 4)) \x. x
+    var cleave = ce.env.addDefinition("cleave", "dup", "[apply] dip apply");
+    console.log("Type of " + i.name + " : " + i.type);
+    var i = ce.env.addDefinition("test", "dup 4 [2 add] 4 dip apply apply] [id] apply");
+    console.log("Type of " + i.name + " : " + i.type);
+    ce.eval("");
 }
 
 outputGrammar();
